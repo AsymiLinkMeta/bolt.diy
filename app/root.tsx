@@ -78,6 +78,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useStore(themeStore);
 
   useEffect(() => {
+    document.documentElement.style.height = '100%';
+    document.documentElement.style.minHeight = '100vh';
+    document.body.style.height = '100%';
+    document.body.style.minHeight = '100vh';
+    document.body.style.margin = '0';
+    const root = document.getElementById('root');
+    if (root) {
+      root.style.minHeight = '100vh';
+    }
+  }, []);
+
+  useEffect(() => {
     document.querySelector('html')?.setAttribute('data-theme', theme);
   }, [theme]);
 
