@@ -30,7 +30,7 @@ export default async function handleRequest(
       controller.enqueue(
         new Uint8Array(
           new TextEncoder().encode(
-            `<!DOCTYPE html><html lang="en" data-theme="${themeStore.value}"><head>${head}</head><body><div id="root" class="w-full h-full">`,
+            `<!DOCTYPE html><html lang="en" data-theme="${themeStore.value}" style="height:100%;background:#0B1120"><head><style>html,body{height:100%;margin:0;padding:0;background:#0B1120}#root{height:100%;display:flex;flex-direction:column}</style>${head}</head><body style="height:100%;background:#0B1120"><div id="root" class="w-full h-full" style="min-height:100vh">`,
           ),
         ),
       );
