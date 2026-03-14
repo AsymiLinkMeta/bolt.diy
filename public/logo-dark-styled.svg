@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" width="220" height="48" fill="none">
+  <defs>
+    <linearGradient id="ld-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="ld-ai-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <filter id="ld-glow">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Icon mark: hexagonal node network (with glow for dark bg) -->
+  <g filter="url(#ld-glow)">
+    <polygon
+      points="24,4 36,4 42,14.4 36,24.8 24,24.8 18,14.4"
+      fill="none"
+      stroke="url(#ld-icon-grad)"
+      stroke-width="1.8"
+      stroke-linejoin="round"
+    />
+    <circle cx="30" cy="14.4" r="4.2" fill="url(#ld-icon-grad)"/>
+    <line x1="18" y1="14.4" x2="25.8" y2="14.4" stroke="url(#ld-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="34.2" y1="14.4" x2="42" y2="14.4" stroke="url(#ld-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="21" y1="9.2" x2="26.6" y2="12.2" stroke="url(#ld-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="33.4" y1="12.2" x2="39" y2="9.2" stroke="url(#ld-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="21" y1="19.6" x2="26.6" y2="16.6" stroke="url(#ld-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <line x1="33.4" y1="16.6" x2="39" y2="19.6" stroke="url(#ld-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <circle cx="18" cy="14.4" r="2.2" fill="#22d3ee"/>
+    <circle cx="42" cy="14.4" r="2.2" fill="#60a5fa"/>
+    <circle cx="24" cy="4" r="1.8" fill="#22d3ee" opacity="0.8"/>
+    <circle cx="36" cy="4" r="1.8" fill="#38bdf8" opacity="0.8"/>
+    <circle cx="24" cy="24.8" r="1.8" fill="#7dd3fc" opacity="0.8"/>
+    <circle cx="36" cy="24.8" r="1.8" fill="#60a5fa" opacity="0.8"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text
+    x="52"
+    y="22"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="700"
+    letter-spacing="-0.5"
+    fill="#f8fafc"
+  >Asymi</text>
+  <text
+    x="115"
+    y="22"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="700"
+    letter-spacing="-0.5"
+    fill="#e2e8f0"
+  >Link</text>
+  <text
+    x="155"
+    y="22"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="800"
+    letter-spacing="1"
+    fill="url(#ld-ai-grad)"
+  > AI</text>
+  <!-- Tagline -->
+  <text
+    x="52"
+    y="36"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="8"
+    font-weight="500"
+    letter-spacing="2.2"
+    fill="#64748b"
+  >AI CODING STUDIO</text>
+</svg>

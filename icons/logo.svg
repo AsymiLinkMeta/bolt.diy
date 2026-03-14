@@ -1,4 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <rect width="16" height="16" rx="2" fill="#1389fd" />
-  <path d="M7.398 9.091h-3.58L10.364 2 8.602 6.909h3.58L5.636 14l1.762-4.909Z" fill="#fff" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <defs>
+    <linearGradient id="icon-g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <polygon points="16,6 22,6 25,11 22,16 16,16 13,11" fill="none" stroke="url(#icon-g)" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="19" cy="11" r="2.8" fill="url(#icon-g)"/>
+  <line x1="13" y1="11" x2="16.2" y2="11" stroke="url(#icon-g)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="21.8" y1="11" x2="25" y2="11" stroke="url(#icon-g)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="14.5" y1="8" x2="17.4" y2="9.8" stroke="url(#icon-g)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="20.6" y1="9.8" x2="23.5" y2="8" stroke="url(#icon-g)" stroke-width="1.2" stroke-linecap="round"/>
+  <circle cx="13" cy="11" r="1.5" fill="#22d3ee"/>
+  <circle cx="25" cy="11" r="1.5" fill="#2563eb"/>
+  <text x="16" y="26" text-anchor="middle" font-family="'Inter', Arial, sans-serif" font-size="7" font-weight="800" letter-spacing="1.5" fill="url(#icon-g)">AI</text>
 </svg>

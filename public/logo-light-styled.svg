@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" width="220" height="48" fill="none">
+  <defs>
+    <linearGradient id="ll-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="ll-ai-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon mark: hexagonal node network -->
+  <g>
+    <!-- Outer hex ring -->
+    <polygon
+      points="24,4 36,4 42,14.4 36,24.8 24,24.8 18,14.4"
+      fill="none"
+      stroke="url(#ll-icon-grad)"
+      stroke-width="1.8"
+      stroke-linejoin="round"
+    />
+    <!-- Center filled node -->
+    <circle cx="30" cy="14.4" r="4.2" fill="url(#ll-icon-grad)"/>
+    <!-- Left spoke -->
+    <line x1="18" y1="14.4" x2="25.8" y2="14.4" stroke="url(#ll-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Right spoke -->
+    <line x1="34.2" y1="14.4" x2="42" y2="14.4" stroke="url(#ll-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Top-left spoke -->
+    <line x1="21" y1="9.2" x2="26.6" y2="12.2" stroke="url(#ll-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Top-right spoke -->
+    <line x1="33.4" y1="12.2" x2="39" y2="9.2" stroke="url(#ll-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Bottom-left spoke -->
+    <line x1="21" y1="19.6" x2="26.6" y2="16.6" stroke="url(#ll-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Bottom-right spoke -->
+    <line x1="33.4" y1="16.6" x2="39" y2="19.6" stroke="url(#ll-icon-grad)" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Corner dots -->
+    <circle cx="18" cy="14.4" r="2.2" fill="#06b6d4"/>
+    <circle cx="42" cy="14.4" r="2.2" fill="#2563eb"/>
+    <circle cx="24" cy="4" r="1.8" fill="#06b6d4" opacity="0.75"/>
+    <circle cx="36" cy="4" r="1.8" fill="#0ea5e9" opacity="0.75"/>
+    <circle cx="24" cy="24.8" r="1.8" fill="#3b82f6" opacity="0.75"/>
+    <circle cx="36" cy="24.8" r="1.8" fill="#2563eb" opacity="0.75"/>
+  </g>
+
+  <!-- Wordmark -->
+  <!-- "Asymi" in dark slate -->
+  <text
+    x="52"
+    y="22"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="700"
+    letter-spacing="-0.5"
+    fill="#0f172a"
+  >Asymi</text>
+  <!-- "Link" in slightly lighter slate for subtle split -->
+  <text
+    x="115"
+    y="22"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="700"
+    letter-spacing="-0.5"
+    fill="#1e3a5f"
+  >Link</text>
+  <!-- "AI" in gradient accent -->
+  <text
+    x="155"
+    y="22"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="20"
+    font-weight="800"
+    letter-spacing="1"
+    fill="url(#ll-ai-grad)"
+  > AI</text>
+  <!-- Tagline -->
+  <text
+    x="52"
+    y="36"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="8"
+    font-weight="500"
+    letter-spacing="2.2"
+    fill="#64748b"
+  >AI CODING STUDIO</text>
+</svg>

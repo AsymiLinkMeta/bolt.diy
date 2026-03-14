@@ -1,4 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <rect width="16" height="16" rx="2" fill="#8A5FFF" />
-  <path d="M7.398 9.091h-3.58L10.364 2 8.602 6.909h3.58L5.636 14l1.762-4.909Z" fill="#fff" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <defs>
+    <linearGradient id="fav-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <!-- Dark background pill -->
+  <rect width="32" height="32" rx="7" fill="#0f172a"/>
+  <!-- Hexagonal outline -->
+  <polygon
+    points="16,5 23,5 26.5,11 23,17 16,17 12.5,11"
+    fill="none"
+    stroke="url(#fav-grad)"
+    stroke-width="1.6"
+    stroke-linejoin="round"
+  />
+  <!-- Center node -->
+  <circle cx="19.5" cy="11" r="2.8" fill="url(#fav-grad)"/>
+  <!-- Horizontal spokes -->
+  <line x1="12.5" y1="11" x2="16.7" y2="11" stroke="url(#fav-grad)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="22.3" y1="11" x2="26.5" y2="11" stroke="url(#fav-grad)" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Top spokes -->
+  <line x1="14.25" y1="7.5" x2="17.5" y2="9.5" stroke="url(#fav-grad)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="21.5" y1="9.5" x2="24.75" y2="7.5" stroke="url(#fav-grad)" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Corner dots -->
+  <circle cx="12.5" cy="11" r="1.4" fill="#22d3ee"/>
+  <circle cx="26.5" cy="11" r="1.4" fill="#2563eb"/>
+  <!-- "AI" label -->
+  <text
+    x="16"
+    y="27"
+    text-anchor="middle"
+    font-family="'Inter', Arial, sans-serif"
+    font-size="7"
+    font-weight="800"
+    letter-spacing="1.5"
+    fill="url(#fav-grad)"
+  >AI</text>
 </svg>
