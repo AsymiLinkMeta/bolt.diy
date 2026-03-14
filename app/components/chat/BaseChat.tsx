@@ -3,7 +3,7 @@
  * Preventing TS checks with files presented in the video for a better presentation.
  */
 import type { JSONValue, Message } from 'ai';
-import React, { type RefCallback, useEffect, useState } from 'react';
+import React, { type RefCallback, useEffect, useRef, useState } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Menu } from '~/components/sidebar/Menu.client';
 import { Workbench } from '~/components/workbench/Workbench.client';
@@ -33,6 +33,7 @@ import { ChatBox } from './ChatBox';
 import type { DesignScheme } from '~/types/design-scheme';
 import type { ElementInfo } from '~/components/workbench/Inspector';
 import LlmErrorAlert from './LLMApiAlert';
+import { useSpeechToText } from '~/lib/hooks/useSpeechToText';
 
 const TEXTAREA_MIN_HEIGHT = 76;
 
@@ -139,9 +140,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     const [apiKeys, setApiKeys] = useState<Record<string, string>>(getApiKeysFromCookies());
     const [modelList, setModelList] = useState<ModelInfo[]>([]);
     const [isModelSettingsCollapsed, setIsModelSettingsCollapsed] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
-    const [transcript, setTranscript] = useState('');
+    const [interimTranscript, setInterimTranscript] = useState('');
+    const committedTextRef = useRef('');
     const [isModelLoading, setIsModelLoading] = useState<string | undefined>('all');
     const [progressAnnotations, setProgressAnnotations] = useState<ProgressAnnotation[]>([]);
     const expoUrl = useStore(expoUrlAtom);
@@ -162,44 +162,34 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       }
     }, [data]);
     useEffect(() => {
-      console.log(transcript);
-    }, [transcript]);
-
-    useEffect(() => {
       onStreamingChange?.(isStreaming);
     }, [isStreaming, onStreamingChange]);
 
-    useEffect(() => {
-      if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-
-        recognition.onresult = (event) => {
-          const transcript = Array.from(event.results)
-            .map((result) => result[0])
-            .map((result) => result.transcript)
-            .join('');
-
-          setTranscript(transcript);
+    const { isListening, isSupported: isSpeechSupported, startListening, stopListening } = useSpeechToText({
+      onTranscript: (text, isFinal) => {
+        if (isFinal) {
+          const newCommitted = committedTextRef.current + text + ' ';
+          committedTextRef.current = newCommitted;
+          setInterimTranscript('');
 
           if (handleInputChange) {
             const syntheticEvent = {
-              target: { value: transcript },
+              target: { value: newCommitted },
             } as React.ChangeEvent<HTMLTextAreaElement>;
             handleInputChange(syntheticEvent);
           }
-        };
+        } else {
+          setInterimTranscript(text);
 
-        recognition.onerror = (event) => {
-          console.error('Speech recognition error:', event.error);
-          setIsListening(false);
-        };
-
-        setRecognition(recognition);
-      }
-    }, []);
+          if (handleInputChange) {
+            const syntheticEvent = {
+              target: { value: committedTextRef.current + text },
+            } as React.ChangeEvent<HTMLTextAreaElement>;
+            handleInputChange(syntheticEvent);
+          }
+        }
+      },
+    });
 
     useEffect(() => {
       if (typeof window !== 'undefined') {
@@ -254,38 +244,17 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       setIsModelLoading(undefined);
     };
 
-    const startListening = () => {
-      if (recognition) {
-        recognition.start();
-        setIsListening(true);
-      }
-    };
-
-    const stopListening = () => {
-      if (recognition) {
-        recognition.stop();
-        setIsListening(false);
-      }
-    };
-
     const handleSendMessage = (event: React.UIEvent, messageInput?: string) => {
       if (sendMessage) {
         sendMessage(event, messageInput);
         setSelectedElement?.(null);
 
-        if (recognition) {
-          recognition.abort(); // Stop current recognition
-          setTranscript(''); // Clear transcript
-          setIsListening(false);
-
-          // Clear the input by triggering handleInputChange with empty value
-          if (handleInputChange) {
-            const syntheticEvent = {
-              target: { value: '' },
-            } as React.ChangeEvent<HTMLTextAreaElement>;
-            handleInputChange(syntheticEvent);
-          }
+        if (isListening) {
+          stopListening();
         }
+
+        committedTextRef.current = '';
+        setInterimTranscript('');
       }
     };
 
@@ -454,6 +423,8 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   enhancingPrompt={enhancingPrompt}
                   enhancePrompt={enhancePrompt}
                   isListening={isListening}
+                  isSpeechSupported={isSpeechSupported}
+                  interimTranscript={interimTranscript}
                   startListening={startListening}
                   stopListening={stopListening}
                   chatStarted={chatStarted}

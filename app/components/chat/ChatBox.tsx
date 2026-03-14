@@ -40,6 +40,8 @@ interface ChatBoxProps {
   isStreaming: boolean;
   handleSendMessage: (event: React.UIEvent, messageInput?: string) => void;
   isListening: boolean;
+  isSpeechSupported?: boolean;
+  interimTranscript?: string;
   startListening: () => void;
   stopListening: () => void;
   chatStarted: boolean;
@@ -168,8 +170,34 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
           </button>
         </div>
       )}
+      {props.isListening && (
+        <div
+          className="flex items-center gap-2 mb-2 px-3 py-1.5 rounded-full text-xs font-medium w-fit"
+          style={{
+            background: 'rgba(0,245,255,0.08)',
+            border: '1px solid rgba(0,245,255,0.25)',
+            color: '#00f5ff',
+            animation: 'voicePillFadeIn 0.2s ease-out',
+          }}
+        >
+          <span
+            className="inline-flex items-center gap-0.5"
+            style={{ minWidth: 20 }}
+          >
+            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#00f5ff', display: 'inline-block', animation: 'voiceDot 1.2s ease-in-out infinite' }} />
+            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#00f5ff', display: 'inline-block', animation: 'voiceDot 1.2s ease-in-out infinite 0.2s' }} />
+            <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#00f5ff', display: 'inline-block', animation: 'voiceDot 1.2s ease-in-out infinite 0.4s' }} />
+          </span>
+          <span>
+            {props.interimTranscript ? `"${props.interimTranscript}"` : 'Listening…'}
+          </span>
+        </div>
+      )}
       <div
-        className={classNames('relative shadow-xs border border-bolt-elements-borderColor backdrop-blur rounded-lg')}
+        className={classNames('relative shadow-xs border border-bolt-elements-borderColor backdrop-blur rounded-lg', {
+          'border-[rgba(0,245,255,0.4)]': props.isListening,
+        })}
+        style={props.isListening ? { boxShadow: '0 0 0 2px rgba(0,245,255,0.12)' } : undefined}
       >
         <textarea
           ref={props.textareaRef}
@@ -289,6 +317,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
               onStart={props.startListening}
               onStop={props.stopListening}
               disabled={props.isStreaming}
+              isSupported={props.isSpeechSupported}
             />
             {props.chatStarted && (
               <IconButton
