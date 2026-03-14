@@ -19,7 +19,7 @@ export default defineConfig((config) => {
     build: {
       target: 'esnext',
       rollupOptions: {
-        maxParallelFileOps: 2,
+        maxParallelFileOps: 1,
       },
       sourcemap: false,
       minify: 'esbuild',
