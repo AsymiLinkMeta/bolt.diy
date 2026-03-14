@@ -1,26 +1,7 @@
 import React from 'react';
 import { Button } from '~/components/ui/Button';
 import { Card, CardContent, CardHeader } from '~/components/ui/Card';
-import {
-  Cpu,
-  Server,
-  Settings,
-  ExternalLink,
-  Package,
-  Code,
-  Database,
-  CheckCircle,
-  AlertCircle,
-  Activity,
-  Cable,
-  ArrowLeft,
-  Download,
-  Shield,
-  Globe,
-  Terminal,
-  Monitor,
-  Wifi,
-} from 'lucide-react';
+import { Cpu, Server, Settings, ExternalLink, Package, Code, Database, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Activity, Cable, ArrowLeft, Download, Shield, Globe, Terminal, Monitor, Wifi } from 'lucide-react';
 
 // Setup Guide Component
 function SetupGuide({ onBack }: { onBack: () => void }) {
@@ -417,7 +398,7 @@ function SetupGuide({ onBack }: { onBack: () => void }) {
                 </div>
                 <div className="space-y-2">
                   <p className="text-xs text-bolt-elements-textSecondary">
-                    To work with Bolt DIY, you MUST enable CORS in LM Studio:
+                    To work with AsymiLink AI, you MUST enable CORS in LM Studio:
                   </p>
                   <ol className="text-xs text-bolt-elements-textSecondary space-y-1 list-decimal list-inside ml-2">
                     <li>In Server Settings, check "Enable CORS"</li>
