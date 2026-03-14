@@ -14,14 +14,23 @@ body {
   background-color: var(--bolt-elements-bg-depth-1);
 }
 
+:root[data-theme='dark'] body,
+:root[data-theme='dark'] html {
+  background: linear-gradient(135deg, #0B1120 0%, #0F2B5B 50%, #0B1120 100%);
+  background-attachment: fixed;
+}
+
 :root {
-  --gradient-opacity: 0.8;
-  --primary-color: rgba(158, 117, 240, var(--gradient-opacity));
-  --secondary-color: rgba(138, 43, 226, var(--gradient-opacity));
-  --accent-color: rgba(128, 59, 239, var(--gradient-opacity));
-  // --primary-color: rgba(147, 112, 219, var(--gradient-opacity));
-  // --secondary-color: rgba(138, 43, 226, var(--gradient-opacity));
-  // --accent-color: rgba(180, 170, 220, var(--gradient-opacity));
+  --gradient-opacity: 0.7;
+  --primary-color: rgba(0, 245, 255, var(--gradient-opacity));
+  --secondary-color: rgba(15, 43, 91, var(--gradient-opacity));
+  --accent-color: rgba(96, 165, 250, var(--gradient-opacity));
+
+  --bg-start: #0B1120;
+  --bg-via: #0F2B5B;
+  --bg-end: #0B1120;
+  --accent-cyan: #00f5ff;
+  --accent-blue: #60a5fa;
 }
 
 .modern-scrollbar {
