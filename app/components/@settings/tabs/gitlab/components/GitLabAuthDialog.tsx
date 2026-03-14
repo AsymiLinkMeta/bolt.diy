@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { classNames } from '~/utils/classNames';
 import { useGitLabConnection } from '~/lib/hooks';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitLabAuthDialog');
 
 interface GitLabAuthDialogProps {
   isOpen: boolean;
@@ -30,7 +33,7 @@ export function GitLabAuthDialog({ isOpen, onClose }: GitLabAuthDialogProps) {
       onClose();
     } catch (error) {
       // Error handling is done in the hook
-      console.error('GitLab connect failed:', error);
+      logger.error('GitLab connect failed:', error);
     }
   };
 

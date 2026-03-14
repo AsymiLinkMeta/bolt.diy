@@ -1,6 +1,9 @@
 import { json } from '@remix-run/cloudflare';
 import type { ActionFunctionArgs } from '@remix-run/cloudflare';
 import { isAllowedUrl } from '~/utils/url';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('WebSearch');
 
 const MAX_CONTENT_LENGTH = 8000;
 
@@ -97,7 +100,7 @@ export async function action({ request }: ActionFunctionArgs) {
       return json({ error: 'Request timed out after 10 seconds' }, { status: 504 });
     }
 
-    console.error('Web search error:', error);
+    logger.error('Web search error:', error);
 
     return json({ error: error instanceof Error ? error.message : 'Failed to fetch URL' }, { status: 500 });
   }

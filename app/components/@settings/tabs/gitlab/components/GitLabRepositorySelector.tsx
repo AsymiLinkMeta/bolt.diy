@@ -6,7 +6,10 @@ import { RepositoryCard } from './RepositoryCard';
 import type { GitLabProjectInfo } from '~/types/GitLab';
 import { useGitLabConnection } from '~/lib/hooks';
 import { classNames } from '~/utils/classNames';
-import { Search, RefreshCw, GitBranch, Calendar, Filter } from 'lucide-react';
+import { Search, RefreshCw, GitBranch, Calendar, ListFilter as Filter } from 'lucide-react';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitLabRepositorySelector');
 
 interface GitLabRepositorySelectorProps {
   onClone?: (repoUrl: string, branch?: string) => void;
@@ -61,7 +64,7 @@ export function GitLabRepositorySelector({ onClone, className }: GitLabRepositor
       const data: any = await response.json();
       setRepositories(data.projects || []);
     } catch (err) {
-      console.error('Failed to fetch GitLab repositories:', err);
+      logger.error('Failed to fetch GitLab repositories:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch repositories');
 
       // Fallback to empty array on error

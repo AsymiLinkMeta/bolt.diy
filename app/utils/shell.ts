@@ -3,6 +3,9 @@ import type { ITerminal } from '~/types/terminal';
 import { withResolvers } from './promises';
 import { atom } from 'nanostores';
 import { expoUrlAtom } from '~/lib/stores/qrCodeStore';
+import { createScopedLogger } from './logger';
+
+const logger = createScopedLogger('Shell');
 
 export async function newShellProcess(webcontainer: WebContainer, terminal: ITerminal) {
   const args: string[] = [];
@@ -59,8 +62,6 @@ export async function newShellProcess(webcontainer: WebContainer, terminal: ITer
   );
 
   terminal.onData((data) => {
-    // console.log('terminal onData', { data, isInteractive });
-
     if (isInteractive) {
       input.write(data);
 
@@ -226,10 +227,6 @@ export class BoltShell {
       state.abort();
     }
 
-    /*
-     * interrupt the current execution
-     *  this.#shellInputStream?.write('\x03');
-     */
     this.terminal.input('\x03');
     await this.waitTillOscCode('prompt');
 
@@ -251,7 +248,7 @@ export class BoltShell {
       try {
         resp.output = cleanTerminalOutput(resp.output);
       } catch (error) {
-        console.log('failed to format terminal output', error);
+        logger.warn('Failed to format terminal output', error);
       }
     }
 

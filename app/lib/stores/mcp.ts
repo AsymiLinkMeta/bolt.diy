@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import type { MCPConfig, MCPServerTools } from '~/lib/services/mcpService';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('MCPStore');
 
 const MCP_SETTINGS_KEY = 'mcp_settings';
 const isBrowser = typeof window !== 'undefined';
@@ -50,7 +53,7 @@ export const useMCPStore = create<Store & Actions>((set, get) => ({
           const serverTools = await updateServerConfig(settings.mcpConfig);
           set(() => ({ settings, serverTools }));
         } catch (error) {
-          console.error('Error parsing saved mcp config:', error);
+          logger.error('Error parsing saved mcp config:', error);
           set(() => ({
             error: `Error parsing saved mcp config: ${error instanceof Error ? error.message : String(error)}`,
           }));

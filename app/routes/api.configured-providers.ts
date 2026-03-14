@@ -2,6 +2,9 @@ import type { LoaderFunction } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { LLMManager } from '~/lib/modules/llm/manager';
 import { LOCAL_PROVIDERS } from '~/lib/stores/settings';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('ConfiguredProviders');
 
 interface ConfiguredProvider {
   name: string;
@@ -96,7 +99,7 @@ export const loader: LoaderFunction = async ({ context }) => {
       providers: configuredProviders,
     });
   } catch (error) {
-    console.error('Error detecting configured providers:', error);
+    logger.error('Error detecting configured providers:', error);
 
     // Return default state on error
     return json<ConfiguredProvidersResponse>({

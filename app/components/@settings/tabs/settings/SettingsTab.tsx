@@ -5,6 +5,9 @@ import { classNames } from '~/utils/classNames';
 import { Switch } from '~/components/ui/Switch';
 import type { UserProfile } from '~/components/@settings/core/types';
 import { isMac } from '~/utils/os';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('SettingsTab');
 
 // Helper to get modifier key symbols/text
 const getModifierSymbol = (modifier: string): string => {
@@ -86,7 +89,7 @@ export default function SettingsTab() {
       localStorage.setItem('bolt_user_profile', JSON.stringify(updatedProfile));
       toast.success('Settings updated');
     } catch (error) {
-      console.error('Error saving settings:', error);
+      logger.error('Error saving settings:', error);
       toast.error('Failed to update settings');
     }
   }, [settings]);

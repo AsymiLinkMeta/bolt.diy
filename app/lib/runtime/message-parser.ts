@@ -61,8 +61,6 @@ function cleanoutMarkdownSyntax(content: string) {
   const codeBlockRegex = /^\s*```\w*\n([\s\S]*?)\n\s*```\s*$/;
   const match = content.match(codeBlockRegex);
 
-  // console.log('matching', !!match, content);
-
   if (match) {
     return match[1]; // Remove common leading 4-space indent
   } else {
@@ -263,7 +261,6 @@ export class StreamingMessageParser {
               const artifactTitle = this.#extractAttribute(artifactTag, 'title') as string;
               const type = this.#extractAttribute(artifactTag, 'type') as string;
 
-              // const artifactId = this.#extractAttribute(artifactTag, 'id') as string;
               const artifactId = `${messageId}-${state.artifactCounter++}`;
 
               if (!artifactTitle) {

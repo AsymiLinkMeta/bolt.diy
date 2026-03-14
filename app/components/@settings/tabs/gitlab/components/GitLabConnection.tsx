@@ -4,6 +4,9 @@ import { toast } from 'react-toastify';
 import { classNames } from '~/utils/classNames';
 import { Button } from '~/components/ui/Button';
 import { useGitLabConnection } from '~/lib/hooks';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitLabConnection');
 
 interface ConnectionTestResult {
   status: 'success' | 'error' | 'testing';
@@ -25,24 +28,24 @@ export default function GitLabConnection({ connectionTest, onTestConnection }: G
   const handleConnect = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    console.log('GitLab connect attempt:', {
+    logger.debug('GitLab connect attempt:', {
       token: token ? `${token.substring(0, 10)}...` : 'empty',
       gitlabUrl,
       tokenLength: token.length,
     });
 
     if (!token.trim()) {
-      console.log('Token is empty, not attempting connection');
+      logger.debug('Token is empty, not attempting connection');
       return;
     }
 
     try {
-      console.log('Calling connect function...');
+      logger.debug('Calling connect function...');
       await connect(token, gitlabUrl);
-      console.log('Connect function completed successfully');
+      logger.debug('Connect function completed successfully');
       setToken(''); // Clear token on successful connection
     } catch (error) {
-      console.error('GitLab connect failed:', error);
+      logger.error('GitLab connect failed:', error);
 
       // Error handling is done in the hook
     }
@@ -181,7 +184,7 @@ export default function GitLabConnection({ connectionTest, onTestConnection }: G
                 <button
                   type="button"
                   onClick={() =>
-                    console.log('Manual test:', { token: token ? `${token.substring(0, 10)}...` : 'empty', gitlabUrl })
+                    logger.debug('Manual test:', { token: token ? `${token.substring(0, 10)}...` : 'empty', gitlabUrl })
                   }
                   className="px-4 py-2 rounded-lg text-sm bg-gray-500 text-white hover:bg-gray-600"
                 >

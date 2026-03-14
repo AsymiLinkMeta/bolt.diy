@@ -7,6 +7,9 @@ import { ScreenshotSelector } from './ScreenshotSelector';
 import { expoUrlAtom } from '~/lib/stores/qrCodeStore';
 import { ExpoQrModal } from '~/components/workbench/ExpoQrModal';
 import type { ElementInfo } from './Inspector';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('Preview');
 
 type ResizeSide = 'left' | 'right' | null;
 
@@ -407,7 +410,7 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
           );
 
           if (!newWindow) {
-            console.error('Failed to open new window');
+            logger.error('Failed to open new window');
             return;
           }
 
@@ -544,7 +547,7 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
           }
         }
       } else {
-        console.warn('[Preview] Invalid WebContainer URL:', activePreview.baseUrl);
+        logger.warn('[Preview] Invalid WebContainer URL:', activePreview.baseUrl);
       }
     }
   };
@@ -782,7 +785,7 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
                         className={`flex w-full justify-between items-center text-start bg-transparent text-xs text-bolt-elements-textTertiary hover:text-bolt-elements-textPrimary`}
                         onClick={() => {
                           if (!activePreview?.baseUrl) {
-                            console.warn('[Preview] No active preview available');
+                            logger.warn('[Preview] No active preview available');
                             return;
                           }
 
@@ -791,7 +794,7 @@ export const Preview = memo(({ setSelectedElement }: PreviewProps) => {
                           );
 
                           if (!match) {
-                            console.warn('[Preview] Invalid WebContainer URL:', activePreview.baseUrl);
+                            logger.warn('[Preview] Invalid WebContainer URL:', activePreview.baseUrl);
                             return;
                           }
 

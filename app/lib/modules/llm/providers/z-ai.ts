@@ -4,6 +4,9 @@ import type { LanguageModelV1 } from 'ai';
 import type { ModelInfo } from '~/lib/modules/llm/types';
 import { createOpenAI } from '@ai-sdk/openai';
 import crypto from 'node:crypto';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('ZaiProvider');
 
 export default class ZaiProvider extends BaseProvider {
   name = 'Z.ai';
@@ -111,7 +114,7 @@ export default class ZaiProvider extends BaseProvider {
         };
       });
     } catch (error) {
-      console.error(`Failed to fetch dynamic models for ${this.name}:`, error);
+      logger.error(`Failed to fetch dynamic models for ${this.name}:`, error);
       return [];
     }
   }
@@ -145,7 +148,7 @@ export default class ZaiProvider extends BaseProvider {
 
       return `${base64Url(header)}.${base64Url(payload)}.${signature}`;
     } catch (error) {
-      console.error(`Failed to generate JWT token for ${this.name}:`, error);
+      logger.error(`Failed to generate JWT token for ${this.name}:`, error);
       throw new Error(`Failed to generate JWT token: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

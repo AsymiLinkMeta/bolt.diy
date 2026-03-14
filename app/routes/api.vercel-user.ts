@@ -1,6 +1,9 @@
 import { json } from '@remix-run/cloudflare';
 import { getApiKeysFromCookie } from '~/lib/api/cookies';
 import { withSecurity } from '~/lib/security';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('VercelUser');
 
 async function vercelUserLoader({ request, context }: { request: Request; context: any }) {
   try {
@@ -31,7 +34,7 @@ async function vercelUserLoader({ request, context }: { request: Request; contex
     const response = await fetch('https://api.vercel.com/v2/user', {
       headers: {
         Authorization: `Bearer ${vercelToken}`,
-        'User-Agent': 'bolt.diy-app',
+        'User-Agent': 'asymilink-ai-app',
       },
     });
 
@@ -61,7 +64,7 @@ async function vercelUserLoader({ request, context }: { request: Request; contex
       username: userData.user.username,
     });
   } catch (error) {
-    console.error('Error fetching Vercel user:', error);
+    logger.error('Error fetching Vercel user:', error);
     return json(
       {
         error: 'Failed to fetch Vercel user information',
@@ -110,7 +113,7 @@ async function vercelUserAction({ request, context }: { request: Request; contex
       const response = await fetch('https://api.vercel.com/v13/projects', {
         headers: {
           Authorization: `Bearer ${vercelToken}`,
-          'User-Agent': 'bolt.diy-app',
+          'User-Agent': 'asymilink-ai-app',
         },
       });
 
@@ -144,7 +147,7 @@ async function vercelUserAction({ request, context }: { request: Request; contex
 
     return json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
-    console.error('Error in Vercel user action:', error);
+    logger.error('Error in Vercel user action:', error);
     return json(
       {
         error: 'Failed to process Vercel request',

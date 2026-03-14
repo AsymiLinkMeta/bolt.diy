@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { DeployButton } from '~/components/deploy/DeployButton';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('HeaderActionButtons');
 
 interface HeaderActionButtonsProps {
   chatStarted: boolean;
@@ -24,7 +27,7 @@ export function HeaderActionButtons({ chatStarted: _chatStarted }: HeaderActionB
         <div className="flex border border-bolt-elements-borderColor rounded-md overflow-hidden text-sm">
           <button
             onClick={() =>
-              window.open('https://github.com/stackblitz-labs/bolt.diy/issues/new?template=bug_report.yml', '_blank')
+              window.open('https://github.com/asymilink/asymilink-ai/issues/new?template=bug_report.yml', '_blank')
             }
             className="rounded-l-md items-center justify-center [&:is(:disabled,.disabled)]:cursor-not-allowed [&:is(:disabled,.disabled)]:opacity-60 px-3 py-1.5 text-xs bg-accent-500 text-white hover:text-bolt-elements-item-contentAccent [&:not(:disabled,.disabled)]:hover:bg-bolt-elements-button-primary-backgroundHover outline-accent-500 flex gap-1.5"
             title="Report Bug"
@@ -39,7 +42,7 @@ export function HeaderActionButtons({ chatStarted: _chatStarted }: HeaderActionB
                 const { downloadDebugLog } = await import('~/utils/debugLogger');
                 await downloadDebugLog();
               } catch (error) {
-                console.error('Failed to download debug log:', error);
+                logger.error('Failed to download debug log:', error);
               }
             }}
             className="rounded-r-md items-center justify-center [&:is(:disabled,.disabled)]:cursor-not-allowed [&:is(:disabled,.disabled)]:opacity-60 px-3 py-1.5 text-xs bg-accent-500 text-white hover:text-bolt-elements-item-contentAccent [&:not(:disabled,.disabled)]:hover:bg-bolt-elements-button-primary-backgroundHover outline-accent-500 flex gap-1.5"

@@ -1,4 +1,7 @@
 import { json, type LoaderFunction, type LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('SystemGitInfo');
 
 interface GitInfo {
   local: {
@@ -62,7 +65,7 @@ declare const __GIT_REPO_NAME: string;
  */
 
 export const loader: LoaderFunction = async ({ request, context }: LoaderFunctionArgs & { context: AppContext }) => {
-  console.log('Git info API called with URL:', request.url);
+  logger.debug('Git info API called with URL:', request.url);
 
   // Handle CORS preflight requests
   if (request.method === 'OPTIONS') {
@@ -78,7 +81,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
 
-  console.log('Git info action:', action);
+  logger.debug('Git info action:', action);
 
   if (action === 'getUser' || action === 'getRepos' || action === 'getOrgs' || action === 'getActivity') {
     // Use server-side token instead of client-side token
@@ -95,13 +98,13 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
 
     const token = serverGithubToken || headerToken || cookieToken;
 
-    console.log(
+    logger.debug(
       'Using GitHub token from:',
       serverGithubToken ? 'server env' : headerToken ? 'auth header' : cookieToken ? 'cookie' : 'none',
     );
 
     if (!token) {
-      console.error('No GitHub token available');
+      logger.error('No GitHub token available');
       return json(
         { error: 'No GitHub token available' },
         {
@@ -124,7 +127,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
         });
 
         if (!response.ok) {
-          console.error('GitHub user API error:', response.status);
+          logger.error('GitHub user API error:', response.status);
           throw new Error(`GitHub API error: ${response.status}`);
         }
 
@@ -150,7 +153,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
         });
 
         if (!reposResponse.ok) {
-          console.error('GitHub repos API error:', reposResponse.status);
+          logger.error('GitHub repos API error:', reposResponse.status);
           throw new Error(`GitHub API error: ${reposResponse.status}`);
         }
 
@@ -179,30 +182,6 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
             languageStats[repo.language] = (languageStats[repo.language] || 0) + 1;
           }
 
-          /*
-           * Optionally fetch languages for each repo for more accurate stats
-           * This is commented out to avoid rate limiting
-           *
-           * if (repo.languages_url) {
-           *   try {
-           *     const langResponse = await fetch(repo.languages_url, {
-           *       headers: {
-           *         Accept: 'application/vnd.github.v3+json',
-           *         Authorization: `Bearer ${token}`,
-           *       },
-           *     });
-           *
-           *     if (langResponse.ok) {
-           *       const languages = await langResponse.json();
-           *       Object.keys(languages).forEach(lang => {
-           *         languageStats[lang] = (languageStats[lang] || 0) + languages[lang];
-           *       });
-           *     }
-           *   } catch (error) {
-           *     console.error(`Error fetching languages for ${repo.name}:`, error);
-           *   }
-           * }
-           */
         }
 
         return json(
@@ -233,7 +212,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
         });
 
         if (!response.ok) {
-          console.error('GitHub orgs API error:', response.status);
+          logger.error('GitHub orgs API error:', response.status);
           throw new Error(`GitHub API error: ${response.status}`);
         }
 
@@ -258,7 +237,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
           ?.split('=')[1];
 
         if (!username) {
-          console.error('GitHub username not found in cookies');
+          logger.error('GitHub username not found in cookies');
           return json(
             { error: 'GitHub username not found in cookies' },
             {
@@ -279,7 +258,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
         });
 
         if (!response.ok) {
-          console.error('GitHub activity API error:', response.status);
+          logger.error('GitHub activity API error:', response.status);
           throw new Error(`GitHub API error: ${response.status}`);
         }
 
@@ -296,7 +275,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
         );
       }
     } catch (error) {
-      console.error('GitHub API error:', error);
+      logger.error('GitHub API error:', error);
       return json(
         { error: error instanceof Error ? error.message : 'Unknown error' },
         {
@@ -318,7 +297,7 @@ export const loader: LoaderFunction = async ({ request, context }: LoaderFunctio
       author: typeof __GIT_AUTHOR !== 'undefined' ? __GIT_AUTHOR : 'development',
       email: typeof __GIT_EMAIL !== 'undefined' ? __GIT_EMAIL : 'development@local',
       remoteUrl: typeof __GIT_REMOTE_URL !== 'undefined' ? __GIT_REMOTE_URL : 'local',
-      repoName: typeof __GIT_REPO_NAME !== 'undefined' ? __GIT_REPO_NAME : 'bolt.diy',
+      repoName: typeof __GIT_REPO_NAME !== 'undefined' ? __GIT_REPO_NAME : 'asymilink-ai',
     },
     timestamp: new Date().toISOString(),
   };

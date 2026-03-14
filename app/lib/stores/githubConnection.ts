@@ -4,6 +4,9 @@ import { logStore } from '~/lib/stores/logs';
 import { gitHubApiService } from '~/lib/services/githubApiService';
 import { calculateStatsSummary } from '~/utils/githubStats';
 import type { GitHubConnection } from '~/types/GitHub';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubConnectionStore');
 
 // Auto-connect using environment variable
 const envToken = import.meta.env?.VITE_GITHUB_ACCESS_TOKEN;
@@ -37,7 +40,7 @@ function initializeConnection() {
       }
     }
   } catch (error) {
-    console.error('Error initializing GitHub connection:', error);
+    logger.error('Error initializing GitHub connection:', error);
     localStorage.removeItem('github_connection');
   }
 }
@@ -106,10 +109,10 @@ export const githubConnectionStore = {
 
       // Fetch stats in background
       this.fetchStats().catch((error) => {
-        console.error('Failed to fetch initial GitHub stats:', error);
+        logger.error('Failed to fetch initial GitHub stats:', error);
       });
     } catch (error) {
-      console.error('Failed to connect to GitHub:', error);
+      logger.error('Failed to connect to GitHub:', error);
       logStore.logError(`GitHub authentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`, {
         type: 'system',
         message: 'GitHub authentication failed',
@@ -180,7 +183,7 @@ export const githubConnectionStore = {
         message: 'Successfully refreshed GitHub statistics',
       });
     } catch (error) {
-      console.error('Failed to fetch GitHub stats:', error);
+      logger.error('Failed to fetch GitHub stats:', error);
 
       // If the error is due to expired token, disconnect
       if (error instanceof Error && error.message.includes('401')) {

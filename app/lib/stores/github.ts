@@ -1,6 +1,9 @@
 import { atom } from 'nanostores';
 import type { GitHubConnection } from '~/types/GitHub';
 import { logStore } from './logs';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubStore');
 
 // Initialize with stored connection or defaults
 const storedConnection = typeof window !== 'undefined' ? localStorage.getItem('github_connection') : null;
@@ -61,7 +64,7 @@ export async function initializeGitHubConnection() {
 
     logStore.logSystem('GitHub connection initialized successfully');
   } catch (error) {
-    console.error('Error initializing GitHub connection:', error);
+    logger.error('Error initializing GitHub connection:', error);
     logStore.logError('Failed to initialize GitHub connection', { error });
   } finally {
     isConnecting.set(false);
@@ -117,7 +120,7 @@ export async function fetchGitHubStatsViaAPI() {
 
     logStore.logSystem('GitHub stats fetched successfully');
   } catch (error) {
-    console.error('GitHub API Error:', error);
+    logger.error('GitHub API Error:', error);
     logStore.logError('Failed to fetch GitHub stats', { error });
   } finally {
     isFetchingStats.set(false);

@@ -1,6 +1,9 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare';
 import { Octokit } from '@octokit/rest';
 import { z } from 'zod';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('BugReport');
 
 // Rate limiting store (in production, use Redis or similar)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -114,7 +117,7 @@ function formatIssueBody(data: z.infer<typeof bugReportSchema>): string {
     }
 
     if (data.environmentInfo.boltVersion) {
-      body += `- bolt.diy: ${data.environmentInfo.boltVersion}\n`;
+      body += `- AsymiLink AI: ${data.environmentInfo.boltVersion}\n`;
     }
 
     if (data.environmentInfo.aiProviders) {
@@ -136,7 +139,7 @@ function formatIssueBody(data: z.infer<typeof bugReportSchema>): string {
     body += `**Contact:** ${data.contactEmail}\n\n`;
   }
 
-  body += '---\n*Submitted via bolt.diy bug report feature*';
+  body += '---\n*Submitted via AsymiLink AI bug report feature*';
 
   return body;
 }
@@ -194,10 +197,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const githubToken =
       (context?.cloudflare?.env as any)?.GITHUB_BUG_REPORT_TOKEN || process.env.GITHUB_BUG_REPORT_TOKEN;
     const targetRepo =
-      (context?.cloudflare?.env as any)?.BUG_REPORT_REPO || process.env.BUG_REPORT_REPO || 'stackblitz-labs/bolt.diy';
+      (context?.cloudflare?.env as any)?.BUG_REPORT_REPO || process.env.BUG_REPORT_REPO || 'asymilink/asymilink-ai';
 
     if (!githubToken) {
-      console.error('GitHub bug report token not configured');
+      logger.error('GitHub bug report token not configured');
       return json(
         { error: 'Bug reporting is not properly configured. Please contact the administrators.' },
         { status: 500 },
@@ -207,7 +210,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     // Initialize GitHub client
     const octokit = new Octokit({
       auth: githubToken,
-      userAgent: 'bolt.diy-bug-reporter',
+      userAgent: 'asymilink-ai-bug-reporter',
     });
 
     // Create GitHub issue
@@ -227,7 +230,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       message: 'Bug report submitted successfully!',
     });
   } catch (error) {
-    console.error('Error creating bug report:', error);
+    logger.error('Error creating bug report:', error);
 
     // Handle validation errors
     if (error instanceof z.ZodError) {

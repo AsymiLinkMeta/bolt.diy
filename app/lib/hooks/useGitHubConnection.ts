@@ -3,8 +3,12 @@ import { useStore } from '@nanostores/react';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import type { GitHubUserResponse, GitHubConnection } from '~/types/GitHub';
+import { createScopedLogger } from '~/utils/logger';
+
 import { useGitHubAPI } from './useGitHubAPI';
 import { githubConnection, isConnecting, updateGitHubConnection } from '~/lib/stores/github';
+
+const logger = createScopedLogger('GitHubConnection');
 
 export interface ConnectionState {
   isConnected: boolean;
@@ -56,7 +60,7 @@ export function useGitHubConnection(): UseGitHubConnectionReturn {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading saved connection:', error);
+      logger.error('Error loading saved connection:', error);
       setError('Failed to load saved connection');
       setIsLoading(false);
 
@@ -76,7 +80,7 @@ export function useGitHubConnection(): UseGitHubConnectionReturn {
         headers: {
           Accept: 'application/vnd.github.v3+json',
           Authorization: `${connection.tokenType === 'classic' ? 'token' : 'Bearer'} ${connection.token}`,
-          'User-Agent': 'Bolt.diy',
+          'User-Agent': 'AsymiLink AI',
         },
       });
 
@@ -93,37 +97,37 @@ export function useGitHubConnection(): UseGitHubConnectionReturn {
 
       updateGitHubConnection(updatedConnection);
     } catch (error) {
-      console.error('Error refreshing connection data:', error);
+      logger.error('Error refreshing connection data:', error);
     }
   }, []);
 
   const connect = useCallback(async (token: string, tokenType: 'classic' | 'fine-grained') => {
-    console.log('useGitHubConnection.connect called with tokenType:', tokenType);
+    logger.debug('useGitHubConnection.connect called with tokenType:', tokenType);
 
     if (!token.trim()) {
-      console.log('Token validation failed - empty token');
+      logger.debug('Token validation failed - empty token');
       setError('Token is required');
 
       return;
     }
 
-    console.log('Setting isConnecting to true');
+    logger.debug('Setting isConnecting to true');
     isConnecting.set(true);
     setError(null);
 
     try {
-      console.log('Making API request to GitHub...');
+      logger.debug('Making API request to GitHub...');
 
       // Test the token by fetching user info
       const response = await fetch('https://api.github.com/user', {
         headers: {
           Accept: 'application/vnd.github.v3+json',
           Authorization: `${tokenType === 'classic' ? 'token' : 'Bearer'} ${token}`,
-          'User-Agent': 'Bolt.diy',
+          'User-Agent': 'AsymiLink AI',
         },
       });
 
-      console.log('GitHub API response status:', response.status, response.statusText);
+      logger.debug('GitHub API response status:', response.status, response.statusText);
 
       if (!response.ok) {
         throw new Error(`Authentication failed: ${response.status} ${response.statusText}`);
@@ -154,7 +158,7 @@ export function useGitHubConnection(): UseGitHubConnectionReturn {
 
       toast.success(`Connected to GitHub as ${userData.login}`);
     } catch (error) {
-      console.error('Failed to connect to GitHub:', error);
+      logger.error('Failed to connect to GitHub:', error);
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect to GitHub';
 
@@ -197,7 +201,7 @@ export function useGitHubConnection(): UseGitHubConnectionReturn {
     try {
       await refreshConnectionData(connection);
     } catch (error) {
-      console.error('Error refreshing connection:', error);
+      logger.error('Error refreshing connection:', error);
       setError('Failed to refresh connection');
       throw error;
     } finally {
@@ -224,13 +228,13 @@ export function useGitHubConnection(): UseGitHubConnectionReturn {
         headers: {
           Accept: 'application/vnd.github.v3+json',
           Authorization: `${connection.tokenType === 'classic' ? 'token' : 'Bearer'} ${connection.token}`,
-          'User-Agent': 'Bolt.diy',
+          'User-Agent': 'AsymiLink AI',
         },
       });
 
       return response.ok;
     } catch (error) {
-      console.error('Connection test failed:', error);
+      logger.error('Connection test failed:', error);
       return false;
     }
   }, [connection]);

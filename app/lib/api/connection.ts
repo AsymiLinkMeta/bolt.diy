@@ -1,3 +1,7 @@
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('Connection');
+
 export interface ConnectionStatus {
   connected: boolean;
   latency: number;
@@ -42,7 +46,7 @@ export const checkConnection = async (): Promise<ConnectionStatus> => {
           break;
         }
       } catch (endpointError) {
-        console.debug(`Failed to connect to ${endpoint}:`, endpointError);
+        logger.debug(`Failed to connect to ${endpoint}:`, endpointError);
         continue;
       }
     }
@@ -53,7 +57,7 @@ export const checkConnection = async (): Promise<ConnectionStatus> => {
       lastChecked: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('Connection check failed:', error);
+    logger.error('Connection check failed:', error);
     return {
       connected: false,
       latency: 0,

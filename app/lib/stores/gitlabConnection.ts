@@ -4,6 +4,9 @@ import { logStore } from '~/lib/stores/logs';
 import { GitLabApiService } from '~/lib/services/gitlabApiService';
 import { calculateStatsSummary } from '~/utils/gitlabStats';
 import type { GitLabConnection, GitLabStats } from '~/types/GitLab';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitLabConnectionStore');
 
 // Auto-connect using environment variable
 const envToken = import.meta.env?.VITE_GITLAB_ACCESS_TOKEN;
@@ -35,7 +38,7 @@ function initializeConnection() {
       }
     }
   } catch (error) {
-    console.error('Error initializing GitLab connection:', error);
+    logger.error('Error initializing GitLab connection:', error);
     localStorage.removeItem('gitlab_connection');
   }
 }
@@ -100,7 +103,7 @@ class GitLabConnectionStore {
 
       return { success: true };
     } catch (error) {
-      console.error('Failed to connect to GitLab:', error);
+      logger.error('Failed to connect to GitLab:', error);
 
       logStore.logError(`GitLab authentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`, {
         type: 'system',
@@ -154,7 +157,7 @@ class GitLabConnectionStore {
 
       return { success: true, stats };
     } catch (error) {
-      console.error('Error fetching GitLab stats:', error);
+      logger.error('Error fetching GitLab stats:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -204,7 +207,7 @@ class GitLabConnectionStore {
         return parsed;
       }
     } catch (error) {
-      console.error('Error parsing saved GitLab connection:', error);
+      logger.error('Error parsing saved GitLab connection:', error);
       localStorage.removeItem('gitlab_connection');
     }
 
@@ -265,11 +268,11 @@ class GitLabConnectionStore {
 
       return { success: true };
     } catch (error) {
-      console.error('Failed to auto-connect to GitLab:', error);
+      logger.error('Failed to auto-connect to GitLab:', error);
 
       // Log more detailed error information
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('GitLab auto-connect error details:', {
+      logger.error('GitLab auto-connect error details:', {
         token: envToken.substring(0, 10) + '...', // Log first 10 chars for debugging
         error: errorMessage,
       });

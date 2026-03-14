@@ -1,12 +1,15 @@
 import type { TabVisibilityConfig } from '~/components/@settings/core/types';
 import { DEFAULT_TAB_CONFIG } from '~/components/@settings/core/constants';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('TabHelpers');
 
 export const getVisibleTabs = (
   tabConfiguration: { userTabs: TabVisibilityConfig[] },
   notificationsEnabled: boolean,
 ): TabVisibilityConfig[] => {
   if (!tabConfiguration?.userTabs || !Array.isArray(tabConfiguration.userTabs)) {
-    console.warn('Invalid tab configuration, using defaults');
+    logger.warn('Invalid tab configuration, using defaults');
     return DEFAULT_TAB_CONFIG as TabVisibilityConfig[];
   }
 
@@ -14,7 +17,7 @@ export const getVisibleTabs = (
   return tabConfiguration.userTabs
     .filter((tab) => {
       if (!tab || typeof tab.id !== 'string') {
-        console.warn('Invalid tab entry:', tab);
+        logger.warn('Invalid tab entry:', tab);
         return false;
       }
 

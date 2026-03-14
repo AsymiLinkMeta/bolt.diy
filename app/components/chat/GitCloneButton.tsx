@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import { LoadingOverlay } from '~/components/ui/LoadingOverlay';
 
 import { classNames } from '~/utils/classNames';
+import { createScopedLogger } from '~/utils/logger';
+
 import { Button } from '~/components/ui/Button';
 import type { IChatMetadata } from '~/lib/persistence/db';
 import { X, Github, GitBranch } from 'lucide-react';
@@ -15,6 +17,8 @@ import { X, Github, GitBranch } from 'lucide-react';
 // Import the new repository selector components
 import { GitHubRepositorySelector } from '~/components/@settings/tabs/github/components/GitHubRepositorySelector';
 import { GitLabRepositorySelector } from '~/components/@settings/tabs/gitlab/components/GitLabRepositorySelector';
+
+const logger = createScopedLogger('GitCloneButton');
 
 const IGNORE_PATTERNS = [
   'node_modules/**',
@@ -153,7 +157,7 @@ ${escapeBoltTags(file.content)}
         await importChat(`Git Project:${repoUrl.split('/').slice(-1)[0]}`, messages);
       }
     } catch (error) {
-      console.error('Error during import:', error);
+      logger.error('Error during import:', error);
       toast.error('Failed to import repository');
     } finally {
       setLoading(false);

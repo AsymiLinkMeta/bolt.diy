@@ -3,6 +3,9 @@ import type { ModelInfo } from '~/lib/modules/llm/types';
 import type { IProviderSetting } from '~/types/model';
 import type { LanguageModelV1 } from 'ai';
 import { createCerebras } from '@ai-sdk/cerebras';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('CerebrasProvider');
 
 export default class CerebrasProvider extends BaseProvider {
   name = 'Cerebras';
@@ -83,7 +86,7 @@ export default class CerebrasProvider extends BaseProvider {
       });
 
       if (!response.ok) {
-        console.error(`Cerebras API error: ${response.statusText}`);
+        logger.error(`Cerebras API error: ${response.statusText}`);
         return [];
       }
 
@@ -103,7 +106,7 @@ export default class CerebrasProvider extends BaseProvider {
 
       return dynamicModels;
     } catch (error) {
-      console.error(`Failed to fetch Cerebras models:`, error);
+      logger.error(`Failed to fetch Cerebras models:`, error);
       return [];
     }
   }

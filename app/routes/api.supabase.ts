@@ -1,5 +1,8 @@
 import { json, type ActionFunction } from '@remix-run/cloudflare';
 import type { SupabaseProject } from '~/types/supabase';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('SupabaseAPI');
 
 export const action: ActionFunction = async ({ request }) => {
   if (request.method !== 'POST') {
@@ -18,7 +21,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     if (!projectsResponse.ok) {
       const errorText = await projectsResponse.text();
-      console.error('Projects fetch failed:', errorText);
+      logger.error('Projects fetch failed:', errorText);
 
       return json({ error: 'Failed to fetch projects' }, { status: 401 });
     }
@@ -45,7 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
       },
     });
   } catch (error) {
-    console.error('Supabase API error:', error);
+    logger.error('Supabase API error:', error);
     return json(
       {
         error: error instanceof Error ? error.message : 'Authentication failed',

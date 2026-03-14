@@ -16,16 +16,7 @@ export function extractPropertiesFromMessage(message: Omit<Message, 'id'>): {
   const modelMatch = textContent.match(MODEL_REGEX);
   const providerMatch = textContent.match(PROVIDER_REGEX);
 
-  /*
-   * Extract model
-   * const modelMatch = message.content.match(MODEL_REGEX);
-   */
   const model = modelMatch ? modelMatch[1] : DEFAULT_MODEL;
-
-  /*
-   * Extract provider
-   * const providerMatch = message.content.match(PROVIDER_REGEX);
-   */
   const provider = providerMatch ? providerMatch[1] : DEFAULT_PROVIDER.name;
 
   const cleanedContent = Array.isArray(message.content)

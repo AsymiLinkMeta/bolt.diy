@@ -1,3 +1,7 @@
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('Updates');
+
 export interface UpdateCheckResult {
   available: boolean;
   version: string;
@@ -56,7 +60,7 @@ export const checkForUpdates = async (): Promise<UpdateCheckResult> => {
      * Using raw.githubusercontent.com which doesn't require authentication
      */
     const latestPackageResponse = await fetch(
-      'https://raw.githubusercontent.com/stackblitz-labs/bolt.diy/main/package.json',
+      'https://raw.githubusercontent.com/asymilink/asymilink-ai/main/package.json',
     );
 
     if (!latestPackageResponse.ok) {
@@ -80,7 +84,7 @@ export const checkForUpdates = async (): Promise<UpdateCheckResult> => {
       releaseNotes: hasUpdate ? 'Update available. Check GitHub for release notes.' : undefined,
     };
   } catch (error) {
-    console.error('Error checking for updates:', error);
+    logger.error('Error checking for updates:', error);
 
     // Determine error type
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -103,6 +107,6 @@ export const acknowledgeUpdate = async (version: string): Promise<void> => {
   try {
     localStorage.setItem('last_acknowledged_update', version);
   } catch (error) {
-    console.error('Failed to store acknowledged version:', error);
+    logger.error('Failed to store acknowledged version:', error);
   }
 };

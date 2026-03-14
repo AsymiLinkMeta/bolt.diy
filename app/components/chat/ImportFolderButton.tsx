@@ -6,6 +6,9 @@ import { createChatFromFolder } from '~/utils/folderImport';
 import { logStore } from '~/lib/stores/logs'; // Assuming logStore is imported from this location
 import { Button } from '~/components/ui/Button';
 import { classNames } from '~/utils/classNames';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('ImportFolderButton');
 
 interface ImportFolderButtonProps {
   className?: string;
@@ -94,7 +97,7 @@ export const ImportFolderButton: React.FC<ImportFolderButtonProps> = ({ classNam
       toast.success('Folder imported successfully');
     } catch (error) {
       logStore.logError('Failed to import folder', error, { folderName });
-      console.error('Failed to import folder:', error);
+      logger.error('Failed to import folder:', error);
       toast.error('Failed to import folder');
     } finally {
       setIsLoading(false);

@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { localModelHealthMonitor, type ModelHealthStatus } from '~/lib/services/localModelHealthMonitor';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('LocalModelHealth');
 
 export interface UseLocalModelHealthOptions {
   autoStart?: boolean;
@@ -58,7 +61,7 @@ export function useLocalModelHealth(options: UseLocalModelHealthOptions = {}): U
   // Start monitoring a provider
   const startMonitoring = useCallback(
     (provider: 'Ollama' | 'LMStudio' | 'OpenAILike', baseUrl: string, interval?: number) => {
-      console.log(`[Health Monitor] Starting monitoring for ${provider} at ${baseUrl}`);
+      logger.debug(`[Health Monitor] Starting monitoring for ${provider} at ${baseUrl}`);
       localModelHealthMonitor.startMonitoring(provider, baseUrl, interval || checkInterval);
     },
     [checkInterval],
@@ -66,7 +69,7 @@ export function useLocalModelHealth(options: UseLocalModelHealthOptions = {}): U
 
   // Stop monitoring a provider
   const stopMonitoring = useCallback((provider: 'Ollama' | 'LMStudio' | 'OpenAILike', baseUrl: string) => {
-    console.log(`[Health Monitor] Stopping monitoring for ${provider} at ${baseUrl}`);
+    logger.debug(`[Health Monitor] Stopping monitoring for ${provider} at ${baseUrl}`);
     localModelHealthMonitor.stopMonitoring(provider, baseUrl);
 
     // Remove from local state

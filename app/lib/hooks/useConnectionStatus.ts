@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { checkConnection } from '~/lib/api/connection';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('ConnectionStatus');
 
 const ACKNOWLEDGED_CONNECTION_ISSUE_KEY = 'bolt_acknowledged_connection_issue';
 
@@ -28,7 +31,7 @@ export const useConnectionStatus = () => {
       // Only show issues if they're new or different from the acknowledged one
       setHasConnectionIssues(issue !== null && issue !== acknowledgedIssue);
     } catch (error) {
-      console.error('Failed to check connection:', error);
+      logger.error('Failed to check connection:', error);
 
       // Show connection issues if we can't even check the status
       setCurrentIssue('disconnected');

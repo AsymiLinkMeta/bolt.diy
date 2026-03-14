@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { Button } from '~/components/ui/Button';
 import { classNames } from '~/utils/classNames';
 import { useGitHubConnection } from '~/lib/hooks';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubConnection');
 
 interface ConnectionTestResult {
   status: 'success' | 'error' | 'testing';
@@ -23,20 +26,20 @@ export function GitHubConnection({ connectionTest, onTestConnection }: GitHubCon
 
   const handleConnect = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handleConnect called with token:', token ? 'token provided' : 'no token', 'tokenType:', tokenType);
+    logger.debug('handleConnect called with token:', token ? 'token provided' : 'no token', 'tokenType:', tokenType);
 
     if (!token.trim()) {
-      console.log('No token provided, returning early');
+      logger.debug('No token provided, returning early');
       return;
     }
 
     try {
-      console.log('Calling connect function...');
+      logger.debug('Calling connect function...');
       await connect(token, tokenType);
-      console.log('Connect function completed successfully');
+      logger.debug('Connect function completed successfully');
       setToken(''); // Clear token on successful connection
     } catch (error) {
-      console.log('Connect function failed:', error);
+      logger.debug('Connect function failed:', error);
 
       // Error handling is done in the hook
     }

@@ -8,6 +8,9 @@ import type { ActionCallbackData } from '~/lib/runtime/message-parser';
 import { chatId } from '~/lib/persistence/useChatHistory';
 import { getLocalStorage } from '~/lib/persistence/localStorage';
 import { formatBuildFailureOutput } from './deployUtils';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitLabDeploy');
 
 export function useGitLabDeploy() {
   const [isDeploying, setIsDeploying] = useState(false);
@@ -121,7 +124,7 @@ export function useGitLabDeploy() {
               // Store the file with its relative path, not the full system path
               files[relativePath] = content;
             } catch (error) {
-              console.warn(`Could not read file ${fullPath}:`, error);
+              logger.warn(`Could not read file ${fullPath}:`, error);
               continue;
             }
           } else if (entry.isDirectory()) {
@@ -157,7 +160,7 @@ export function useGitLabDeploy() {
         projectName: artifact.title || 'bolt-project',
       };
     } catch (err) {
-      console.error('GitLab deploy error:', err);
+      logger.error('GitLab deploy error:', err);
       toast.error(err instanceof Error ? err.message : 'GitLab deployment preparation failed');
 
       return false;

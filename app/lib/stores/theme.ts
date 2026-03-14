@@ -1,5 +1,8 @@
 import { atom } from 'nanostores';
 import { logStore } from './logs';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('ThemeStore');
 
 export type Theme = 'dark' | 'light';
 
@@ -47,7 +50,7 @@ export function toggleTheme() {
       localStorage.setItem('bolt_user_profile', JSON.stringify(profile));
     }
   } catch (error) {
-    console.error('Error updating user profile theme:', error);
+    logger.error('Error updating user profile theme:', error);
   }
 
   logStore.logSystem(`Theme changed to ${newTheme} mode`);

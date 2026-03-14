@@ -3,6 +3,9 @@ import { atom, type WritableAtom } from 'nanostores';
 import type { ITerminal } from '~/types/terminal';
 import { newBoltShellProcess, newShellProcess } from '~/utils/shell';
 import { coloredText } from '~/utils/terminal';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('TerminalStore');
 
 export class TerminalStore {
   #webcontainer: Promise<WebContainer>;
@@ -60,7 +63,7 @@ export class TerminalStore {
       try {
         process.kill();
       } catch (error) {
-        console.warn('Failed to kill terminal process:', error);
+        logger.warn('Failed to kill terminal process:', error);
       }
       this.#terminals.splice(terminalIndex, 1);
     }

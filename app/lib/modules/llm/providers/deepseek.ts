@@ -3,6 +3,9 @@ import type { ModelInfo } from '~/lib/modules/llm/types';
 import type { IProviderSetting } from '~/types/model';
 import type { LanguageModelV1 } from 'ai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('DeepseekProvider');
 
 export default class DeepseekProvider extends BaseProvider {
   name = 'Deepseek';
@@ -76,7 +79,7 @@ export default class DeepseekProvider extends BaseProvider {
       });
 
       if (!response.ok) {
-        console.error(`DeepSeek API error: ${response.statusText}`);
+        logger.error(`DeepSeek API error: ${response.statusText}`);
         return [];
       }
 
@@ -97,7 +100,7 @@ export default class DeepseekProvider extends BaseProvider {
 
       return dynamicModels;
     } catch (error) {
-      console.error(`Failed to fetch DeepSeek models:`, error);
+      logger.error(`Failed to fetch DeepSeek models:`, error);
       return [];
     }
   }

@@ -3,6 +3,9 @@ import type { ModelInfo } from '~/lib/modules/llm/types';
 import type { IProviderSetting } from '~/types/model';
 import type { LanguageModelV1 } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('OpenRouterProvider');
 
 interface OpenRouterModel {
   name: string;
@@ -79,7 +82,7 @@ export default class OpenRouterProvider extends BaseProvider {
           };
         });
     } catch (error) {
-      console.error('Error getting OpenRouter models:', error);
+      logger.error('Error getting OpenRouter models:', error);
       return [];
     }
   }

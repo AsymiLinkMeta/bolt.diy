@@ -2,6 +2,9 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import type { GitHubStats, GitHubConnection } from '~/types/GitHub';
 import { gitHubApiService } from '~/lib/services/githubApiService';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubStats');
 
 export interface UseGitHubStatsState {
   stats: GitHubStats | null;
@@ -82,7 +85,7 @@ export function useGitHubStats(
         // Use a timeout to prevent immediate fetching on mount
         const timeoutId = setTimeout(() => {
           fetchStats().catch((error) => {
-            console.warn('Failed to auto-fetch stats:', error);
+            logger.warn('Failed to auto-fetch stats:', error);
 
             // Don't throw error on auto-fetch to prevent crashes
           });
@@ -127,7 +130,7 @@ export function useGitHubStats(
         }
       }
     } catch (error) {
-      console.error('Error loading cached stats:', error);
+      logger.error('Error loading cached stats:', error);
 
       // Clear corrupted cache
       localStorage.removeItem(STATS_CACHE_KEY);
@@ -143,7 +146,7 @@ export function useGitHubStats(
       };
       localStorage.setItem(STATS_CACHE_KEY, JSON.stringify(cacheData));
     } catch (error) {
-      console.error('Error saving stats to cache:', error);
+      logger.error('Error saving stats to cache:', error);
     }
   }, []);
 
@@ -219,7 +222,7 @@ export function useGitHubStats(
         toast.success('GitHub stats updated successfully');
       }
     } catch (error) {
-      console.error('Error fetching GitHub stats:', error);
+      logger.error('Error fetching GitHub stats:', error);
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch GitHub stats';
 
@@ -302,7 +305,7 @@ export function useGitHubRepositories(connection: GitHubConnection | null) {
       const repos = await apiService.getAllUserRepositories();
       setRepositories(repos);
     } catch (error) {
-      console.error('Error fetching repositories:', error);
+      logger.error('Error fetching repositories:', error);
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch repositories';
       setError(errorMessage);

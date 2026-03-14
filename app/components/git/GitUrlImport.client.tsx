@@ -8,8 +8,12 @@ import { Chat } from '~/components/chat/Chat.client';
 import { useGit } from '~/lib/hooks/useGit';
 import { useChatHistory } from '~/lib/persistence';
 import { createCommandsMessage, detectProjectCommands, escapeBoltTags } from '~/utils/projectCommands';
+import { createScopedLogger } from '~/utils/logger';
+
 import { LoadingOverlay } from '~/components/ui/LoadingOverlay';
 import { toast } from 'react-toastify';
+
+const logger = createScopedLogger('GitUrlImport');
 
 const IGNORE_PATTERNS = [
   'node_modules/**',
@@ -103,7 +107,7 @@ ${escapeBoltTags(file.content)}
           await importChat(`Git Project:${repoUrl.split('/').slice(-1)[0]}`, messages, { gitUrl: repoUrl });
         }
       } catch (error) {
-        console.error('Error during import:', error);
+        logger.error('Error during import:', error);
         toast.error('Failed to import repository');
         setLoading(false);
         window.location.href = '/';
@@ -126,7 +130,7 @@ ${escapeBoltTags(file.content)}
     }
 
     importRepo(url).catch((error) => {
-      console.error('Error importing repo:', error);
+      logger.error('Error importing repo:', error);
       toast.error('Failed to import repository');
       setLoading(false);
       window.location.href = '/';

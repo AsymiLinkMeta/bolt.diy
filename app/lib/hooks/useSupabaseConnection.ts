@@ -11,6 +11,9 @@ import {
   fetchProjectApiKeys,
   initializeSupabaseConnection,
 } from '~/lib/stores/supabase';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('SupabaseConnection');
 
 export function useSupabaseConnection() {
   const connection = useStore(supabaseConnection);
@@ -22,14 +25,14 @@ export function useSupabaseConnection() {
 
   useEffect(() => {
     const initConnection = async () => {
-      console.log('useSupabaseConnection: Initializing connection...');
+      logger.debug('useSupabaseConnection: Initializing connection...');
 
       // First, try to initialize from server-side token
       try {
         await initializeSupabaseConnection();
-        console.log('useSupabaseConnection: Server-side initialization completed');
+        logger.debug('useSupabaseConnection: Server-side initialization completed');
       } catch {
-        console.log('useSupabaseConnection: Server-side initialization failed, trying localStorage');
+        logger.debug('useSupabaseConnection: Server-side initialization failed, trying localStorage');
       }
 
       // Then check localStorage for additional data
@@ -37,7 +40,7 @@ export function useSupabaseConnection() {
       const savedCredentials = localStorage.getItem('supabaseCredentials');
 
       if (savedConnection) {
-        console.log('useSupabaseConnection: Loading from localStorage');
+        logger.debug('useSupabaseConnection: Loading from localStorage');
 
         const parsed = JSON.parse(savedConnection);
 
@@ -53,7 +56,7 @@ export function useSupabaseConnection() {
         }
 
         if (parsed.token && parsed.selectedProjectId && !parsed.credentials) {
-          fetchProjectApiKeys(parsed.selectedProjectId, parsed.token).catch(console.error);
+          fetchProjectApiKeys(parsed.selectedProjectId, parsed.token).catch((err) => logger.error(err));
         }
       }
     };
@@ -95,7 +98,7 @@ export function useSupabaseConnection() {
 
       return true;
     } catch (error) {
-      console.error('Connection error:', error);
+      logger.error('Connection error:', error);
       logStore.logError('Failed to authenticate with Supabase', { error });
       toast.error(error instanceof Error ? error.message : 'Failed to connect to Supabase');
       updateSupabaseConnection({ user: null, token: '' });
@@ -130,7 +133,7 @@ export function useSupabaseConnection() {
         await fetchProjectApiKeys(projectId, currentState.token);
         toast.success('Project selected successfully');
       } catch (error) {
-        console.error('Failed to fetch API keys:', error);
+        logger.error('Failed to fetch API keys:', error);
         toast.error('Selected project but failed to fetch API keys');
       }
     } else {

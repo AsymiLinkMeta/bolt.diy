@@ -1,4 +1,7 @@
 import ignore from 'ignore';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('FileUtils');
 
 // Common patterns to ignore, similar to .gitignore
 export const IGNORE_PATTERNS = [
@@ -59,7 +62,7 @@ const readPackageJson = async (files: File[]): Promise<{ scripts?: Record<string
 
     return JSON.parse(content);
   } catch (error) {
-    console.error('Error reading package.json:', error);
+    logger.error('Error reading package.json:', error);
     return null;
   }
 };

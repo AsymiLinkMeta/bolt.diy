@@ -1,6 +1,9 @@
 import { json } from '@remix-run/cloudflare';
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitInfo');
 
 export async function loader() {
   try {
@@ -55,7 +58,7 @@ export async function loader() {
       lastCommit,
     });
   } catch (error) {
-    console.error('Error fetching git info:', error);
+    logger.error('Error fetching git info:', error);
     return json(
       {
         branch: 'error',

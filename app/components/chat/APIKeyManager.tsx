@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { IconButton } from '~/components/ui/IconButton';
 import type { ProviderInfo } from '~/types/model';
 import Cookies from 'js-cookie';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('APIKeyManager');
 
 interface APIKeyManagerProps {
   provider: ProviderInfo;
@@ -64,7 +67,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
       providerEnvKeyStatusCache[provider.name] = isSet;
       setIsEnvKeySet(isSet);
     } catch (error) {
-      console.error('Failed to check environment API key:', error);
+      logger.error('Failed to check environment API key:', error);
       setIsEnvKeySet(false);
     }
   }, [provider.name]);

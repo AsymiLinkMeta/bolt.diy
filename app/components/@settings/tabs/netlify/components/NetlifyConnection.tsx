@@ -23,6 +23,9 @@ import { Button } from '~/components/ui/Button';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '~/components/ui/Collapsible';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '~/components/ui/Badge';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('NetlifyConnection');
 
 // Add the Netlify logo SVG component at the top of the file
 const NetlifyLogo = () => (
@@ -44,7 +47,7 @@ interface SiteAction {
 }
 
 export default function NetlifyConnection() {
-  console.log('NetlifyConnection component mounted');
+  logger.debug('NetlifyConnection component mounted');
 
   const connection = useStore(netlifyConnection);
   const [tokenInput, setTokenInput] = useState('');
@@ -53,7 +56,7 @@ export default function NetlifyConnection() {
   const [deploys, setDeploys] = useState<NetlifyDeploy[]>([]);
   const [builds, setBuilds] = useState<NetlifyBuild[]>([]);
 
-  console.log('NetlifyConnection initial state:', {
+  logger.debug('NetlifyConnection initial state:', {
     connection: {
       user: connection.user,
       token: connection.token ? '[TOKEN_EXISTS]' : '[NO_TOKEN]',
@@ -380,7 +383,7 @@ export default function NetlifyConnection() {
   };
 
   useEffect(() => {
-    console.log('Netlify: Running initialization useEffect');
+    logger.debug('Netlify: Running initialization useEffect');
 
     // Initialize connection with environment token if available
     initializeNetlifyConnection();
@@ -434,7 +437,7 @@ export default function NetlifyConnection() {
       // Fetch stats after successful connection
       fetchNetlifyStats(tokenInput);
     } catch (error) {
-      console.error('Error connecting to Netlify:', error);
+      logger.error('Error connecting to Netlify:', error);
       toast.error(`Failed to connect to Netlify: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsConnecting(false);
@@ -525,7 +528,7 @@ export default function NetlifyConnection() {
 
       toast.success('Netlify stats updated');
     } catch (error) {
-      console.error('Error fetching Netlify stats:', error);
+      logger.error('Error fetching Netlify stats:', error);
       toast.error(`Failed to fetch Netlify stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setFetchingStats(false);
@@ -953,7 +956,7 @@ export default function NetlifyConnection() {
               {/* Debug button - remove this later */}
               <button
                 onClick={async () => {
-                  console.log('Manual Netlify auto-connect test');
+                  logger.debug('Manual Netlify auto-connect test');
                   await initializeNetlifyConnection();
                 }}
                 className="px-3 py-2 rounded-lg text-xs bg-blue-500 text-white hover:bg-blue-600"

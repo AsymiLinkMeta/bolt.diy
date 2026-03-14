@@ -1,5 +1,8 @@
 import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/cloudflare';
 import type { VercelProjectInfo } from '~/types/vercel';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('VercelDeploy');
 
 // Function to detect framework from project files
 const detectFramework = (files: Record<string, string>): string => {
@@ -118,7 +121,7 @@ const detectFramework = (files: Record<string, string>): string => {
       // Default to Node.js if package.json exists
       return 'nodejs';
     } catch (error) {
-      console.error('Error parsing package.json:', error);
+      logger.error('Error parsing package.json:', error);
     }
   }
 
@@ -226,7 +229,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         : null,
     });
   } catch (error) {
-    console.error('Error fetching Vercel deployment:', error);
+    logger.error('Error fetching Vercel deployment:', error);
     return json({ error: 'Failed to fetch deployment' }, { status: 500 });
   }
 }
@@ -258,7 +261,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     if (!detectedFramework && sourceFiles) {
       detectedFramework = detectFramework(sourceFiles);
-      console.log('Detected framework from source files:', detectedFramework);
+      logger.debug('Detected framework from source files:', detectedFramework);
     }
 
     // If no projectId provided, create a new project
@@ -480,7 +483,7 @@ export async function action({ request }: ActionFunctionArgs) {
       project: projectInfo,
     });
   } catch (error) {
-    console.error('Vercel deploy error:', error);
+    logger.error('Vercel deploy error:', error);
     return json({ error: 'Deployment failed' }, { status: 500 });
   }
 }

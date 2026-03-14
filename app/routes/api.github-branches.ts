@@ -1,6 +1,9 @@
 import { json } from '@remix-run/cloudflare';
 import { getApiKeysFromCookie } from '~/lib/api/cookies';
 import { withSecurity } from '~/lib/security';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubBranches');
 
 interface GitHubBranch {
   name: string;
@@ -72,7 +75,7 @@ async function githubBranchesLoader({ request, context }: { request: Request; co
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `Bearer ${githubToken}`,
-        'User-Agent': 'bolt.diy-app',
+        'User-Agent': 'asymilink-ai-app',
       },
     });
 
@@ -96,7 +99,7 @@ async function githubBranchesLoader({ request, context }: { request: Request; co
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `Bearer ${githubToken}`,
-        'User-Agent': 'bolt.diy-app',
+        'User-Agent': 'asymilink-ai-app',
       },
     });
 
@@ -133,7 +136,7 @@ async function githubBranchesLoader({ request, context }: { request: Request; co
       total: transformedBranches.length,
     });
   } catch (error) {
-    console.error('Failed to fetch GitHub branches:', error);
+    logger.error('Failed to fetch GitHub branches:', error);
 
     if (error instanceof Error) {
       if (error.message.includes('fetch')) {

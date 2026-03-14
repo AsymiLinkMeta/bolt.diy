@@ -83,15 +83,6 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
       options: {
         system:
           'You are a senior software principal architect, you should help the user analyse the user query and enrich it with the necessary context and constraints to make it more specific, actionable, and effective. You should also ensure that the prompt is self-contained and uses professional language. Your response should ONLY contain the enhanced prompt text. Do not include any explanations, metadata, or wrapper tags.',
-
-        /*
-         * onError: (event) => {
-         *   throw new Response(null, {
-         *     status: 500,
-         *     statusText: 'Internal Server Error',
-         *   });
-         * }
-         */
       },
     });
 
@@ -120,7 +111,7 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
       },
     });
   } catch (error: unknown) {
-    console.log(error);
+    logger.debug(error);
 
     if (error instanceof Error && error.message?.includes('API key')) {
       throw new Response('Invalid or missing API key', {

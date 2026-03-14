@@ -3,6 +3,9 @@ import type { ModelInfo } from '~/lib/modules/llm/types';
 import type { IProviderSetting } from '~/types/model';
 import type { LanguageModelV1 } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('MoonshotProvider');
 
 export default class MoonshotProvider extends BaseProvider {
   name = 'Moonshot';
@@ -67,7 +70,7 @@ export default class MoonshotProvider extends BaseProvider {
       });
 
       if (!response.ok) {
-        console.error(`Moonshot API error: ${response.statusText}`);
+        logger.error(`Moonshot API error: ${response.statusText}`);
         return [];
       }
 
@@ -87,7 +90,7 @@ export default class MoonshotProvider extends BaseProvider {
 
       return dynamicModels;
     } catch (error) {
-      console.error(`Failed to fetch Moonshot models:`, error);
+      logger.error(`Failed to fetch Moonshot models:`, error);
       return [];
     }
   }

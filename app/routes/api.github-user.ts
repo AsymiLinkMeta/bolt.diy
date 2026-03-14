@@ -1,6 +1,9 @@
 import { json } from '@remix-run/cloudflare';
 import { getApiKeysFromCookie } from '~/lib/api/cookies';
 import { withSecurity } from '~/lib/security';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubUser');
 
 async function githubUserLoader({ request, context }: { request: Request; context: any }) {
   try {
@@ -26,7 +29,7 @@ async function githubUserLoader({ request, context }: { request: Request; contex
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `Bearer ${githubToken}`,
-        'User-Agent': 'bolt.diy-app',
+        'User-Agent': 'asymilink-ai-app',
       },
     });
 
@@ -54,7 +57,7 @@ async function githubUserLoader({ request, context }: { request: Request; contex
       type: userData.type,
     });
   } catch (error) {
-    console.error('Error fetching GitHub user:', error);
+    logger.error('Error fetching GitHub user:', error);
     return json(
       {
         error: 'Failed to fetch GitHub user information',
@@ -117,7 +120,7 @@ async function githubUserAction({ request, context }: { request: Request; contex
         headers: {
           Accept: 'application/vnd.github.v3+json',
           Authorization: `Bearer ${githubToken}`,
-          'User-Agent': 'bolt.diy-app',
+          'User-Agent': 'asymilink-ai-app',
         },
       });
 
@@ -166,7 +169,7 @@ async function githubUserAction({ request, context }: { request: Request; contex
         headers: {
           Accept: 'application/vnd.github.v3+json',
           Authorization: `Bearer ${githubToken}`,
-          'User-Agent': 'bolt.diy-app',
+          'User-Agent': 'asymilink-ai-app',
         },
       });
 
@@ -214,7 +217,7 @@ async function githubUserAction({ request, context }: { request: Request; contex
           headers: {
             Accept: 'application/vnd.github.v3+json',
             Authorization: `Bearer ${githubToken}`,
-            'User-Agent': 'bolt.diy-app',
+            'User-Agent': 'asymilink-ai-app',
           },
         },
       );
@@ -270,7 +273,7 @@ async function githubUserAction({ request, context }: { request: Request; contex
 
     return json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
-    console.error('Error in GitHub user action:', error);
+    logger.error('Error in GitHub user action:', error);
     return json(
       {
         error: 'Failed to process GitHub request',

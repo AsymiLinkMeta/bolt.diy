@@ -8,8 +8,12 @@ import { getHighlighter } from 'shiki';
 import '~/styles/diff-view.css';
 import { diffFiles, extractRelativePath } from '~/utils/diff';
 import type { FileHistory } from '~/types/actions';
+import { createScopedLogger } from '~/utils/logger';
+
 import { getLanguageFromExtension } from '~/utils/getLanguageFromExtension';
 import { themeStore } from '~/lib/stores/theme';
+
+const logger = createScopedLogger('DiffView');
 
 interface CodeComparisonProps {
   beforeCode: string;
@@ -298,7 +302,7 @@ const processChanges = (beforeCode: string, afterCode: string) => {
       isBinary: false,
     };
   } catch (error) {
-    console.error('Error processing changes:', error);
+    logger.error('Error processing changes:', error);
     return {
       beforeLines: [],
       afterLines: [],
@@ -783,7 +787,7 @@ export const DiffView = memo(({ fileHistory, setFileHistory }: DiffViewProps) =>
       </div>
     );
   } catch (error) {
-    console.error('DiffView render error:', error);
+    logger.error('DiffView render error:', error);
     return (
       <div className="flex w-full h-full justify-center items-center bg-bolt-elements-background-depth-1 text-red-400">
         <div className="text-center">

@@ -1,4 +1,8 @@
 // Simple EventEmitter implementation for browser compatibility
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('LocalModelHealthMonitor');
+
 class SimpleEventEmitter {
   private _events: Record<string, ((...args: any[]) => void)[]> = {};
 
@@ -219,7 +223,7 @@ export class LocalModelHealthMonitor extends SimpleEventEmitter {
    */
   private async _checkOllamaHealth(baseUrl: string, signal: AbortSignal): Promise<HealthCheckResult> {
     try {
-      console.log(`[Health Check] Checking Ollama at ${baseUrl}`);
+      logger.debug(`[Health Check] Checking Ollama at ${baseUrl}`);
 
       // Check if Ollama is running
       const response = await fetch(`${baseUrl}/api/tags`, {
@@ -234,7 +238,7 @@ export class LocalModelHealthMonitor extends SimpleEventEmitter {
       const data = (await response.json()) as { models?: Array<{ name: string }> };
       const models = data.models?.map((model) => model.name) || [];
 
-      console.log(`[Health Check] Ollama healthy with ${models.length} models`);
+      logger.debug(`[Health Check] Ollama healthy with ${models.length} models`);
 
       // Try to get version info
       let version: string | undefined;
@@ -257,7 +261,7 @@ export class LocalModelHealthMonitor extends SimpleEventEmitter {
         version,
       };
     } catch (error) {
-      console.error(`[Health Check] Ollama health check failed:`, error);
+      logger.error(`[Health Check] Ollama health check failed:`, error);
       return {
         isHealthy: false,
         responseTime: 0,
@@ -314,7 +318,7 @@ export class LocalModelHealthMonitor extends SimpleEventEmitter {
           isHealthy: false,
           responseTime: 0,
           error:
-            'CORS_ERROR: LM Studio server is blocking cross-origin requests. Try enabling CORS in LM Studio settings or use Bolt desktop app.',
+            'CORS_ERROR: LM Studio server is blocking cross-origin requests. Try enabling CORS in LM Studio settings or use AsymiLink AI desktop app.',
         };
       }
 

@@ -16,6 +16,9 @@ import {
   initializeSupabaseConnection,
   type SupabaseProject,
 } from '~/lib/stores/supabase';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('SupabaseTab');
 
 interface ConnectionTestResult {
   status: 'success' | 'error' | 'testing';
@@ -199,10 +202,10 @@ export default function SupabaseTab() {
         const currentState = supabaseConnection.get();
 
         if (!currentState.user) {
-          console.log('No server-side Supabase token available, manual connection required');
+          logger.debug('No server-side Supabase token available, manual connection required');
         }
       } catch (error) {
-        console.error('Failed to initialize Supabase connection:', error);
+        logger.error('Failed to initialize Supabase connection:', error);
       }
     };
     initializeConnection();
@@ -234,7 +237,7 @@ export default function SupabaseTab() {
       toast.success('Successfully connected to Supabase');
       setTokenInput('');
     } catch (error) {
-      console.error('Auth error:', error);
+      logger.error('Auth error:', error);
       toast.error('Failed to connect to Supabase');
       updateSupabaseConnection({ user: null, token: '' });
     } finally {
@@ -277,7 +280,7 @@ export default function SupabaseTab() {
       try {
         await fetchProjectApiKeys(projectId, connection.token);
       } catch (error) {
-        console.error('Failed to fetch API keys:', error);
+        logger.error('Failed to fetch API keys:', error);
       }
     }
   };

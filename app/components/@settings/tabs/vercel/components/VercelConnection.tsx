@@ -12,9 +12,12 @@ import {
   fetchVercelStats,
   autoConnectVercel,
 } from '~/lib/stores/vercel';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('VercelConnection');
 
 export default function VercelConnection() {
-  console.log('VercelConnection component mounted');
+  logger.debug('VercelConnection component mounted');
 
   const connection = useStore(vercelConnection);
   const connecting = useStore(isConnecting);
@@ -22,7 +25,7 @@ export default function VercelConnection() {
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
   const hasInitialized = useRef(false);
 
-  console.log('VercelConnection initial state:', {
+  logger.debug('VercelConnection initial state:', {
     connection: {
       user: connection.user,
       token: connection.token ? '[TOKEN_EXISTS]' : '[NO_TOKEN]',
@@ -33,12 +36,12 @@ export default function VercelConnection() {
   useEffect(() => {
     // Prevent multiple initializations
     if (hasInitialized.current) {
-      console.log('Vercel: Already initialized, skipping');
+      logger.debug('Vercel: Already initialized, skipping');
       return;
     }
 
     const initializeConnection = async () => {
-      console.log('Vercel initializeConnection:', {
+      logger.debug('Vercel initializeConnection:', {
         user: connection.user,
         token: connection.token ? '[TOKEN_EXISTS]' : '[NO_TOKEN]',
         envToken: import.meta.env?.VITE_VERCEL_ACCESS_TOKEN ? '[ENV_TOKEN_EXISTS]' : '[NO_ENV_TOKEN]',
@@ -48,21 +51,21 @@ export default function VercelConnection() {
 
       // Auto-connect using environment variable if no existing connection but token exists
       if (!connection.user && connection.token && import.meta.env?.VITE_VERCEL_ACCESS_TOKEN) {
-        console.log('Vercel: Attempting auto-connection');
+        logger.debug('Vercel: Attempting auto-connection');
 
         const result = await autoConnectVercel();
 
         if (result.success) {
           toast.success('Connected to Vercel automatically');
         } else {
-          console.error('Vercel auto-connection failed:', result.error);
+          logger.error('Vercel auto-connection failed:', result.error);
         }
       } else if (connection.user && connection.token) {
         // Fetch stats for existing connection
-        console.log('Vercel: Fetching stats for existing connection');
+        logger.debug('Vercel: Fetching stats for existing connection');
         await fetchVercelStats(connection.token);
       } else {
-        console.log('Vercel: No auto-connection conditions met');
+        logger.debug('Vercel: No auto-connection conditions met');
       }
     };
 
@@ -94,7 +97,7 @@ export default function VercelConnection() {
       await fetchVercelStats(connection.token);
       toast.success('Successfully connected to Vercel');
     } catch (error) {
-      console.error('Auth error:', error);
+      logger.error('Auth error:', error);
       logStore.logError('Failed to authenticate with Vercel', { error });
       toast.error('Failed to connect to Vercel');
       updateVercelConnection({ user: null, token: '' });
@@ -108,7 +111,7 @@ export default function VercelConnection() {
     toast.success('Disconnected from Vercel');
   };
 
-  console.log('connection', connection);
+  logger.debug('connection', connection);
 
   return (
     <motion.div
@@ -207,7 +210,7 @@ export default function VercelConnection() {
               {/* Debug button - remove this later */}
               <button
                 onClick={async () => {
-                  console.log('Manual auto-connect test');
+                  logger.debug('Manual auto-connect test');
 
                   const result = await autoConnectVercel();
 

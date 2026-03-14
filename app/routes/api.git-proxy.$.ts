@@ -1,5 +1,8 @@
 import { json } from '@remix-run/cloudflare';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitProxy');
 
 // Allowed headers to forward to the target server
 const ALLOW_HEADERS = [
@@ -85,7 +88,7 @@ async function handleProxyRequest(request: Request, path: string | undefined) {
     const url = new URL(request.url);
     const targetURL = `https://${domain}/${remainingPath}${url.search}`;
 
-    console.log('Target URL:', targetURL);
+    logger.debug('Target URL:', targetURL);
 
     // Filter and prepare headers
     const headers = new Headers();
@@ -105,7 +108,7 @@ async function handleProxyRequest(request: Request, path: string | undefined) {
       headers.set('User-Agent', 'git/@isomorphic-git/cors-proxy');
     }
 
-    console.log('Request headers:', Object.fromEntries(headers.entries()));
+    logger.debug('Request headers:', Object.fromEntries(headers.entries()));
 
     // Prepare fetch options
     const fetchOptions: RequestInit = {
@@ -128,7 +131,7 @@ async function handleProxyRequest(request: Request, path: string | undefined) {
     // Forward the request to the target URL
     const response = await fetch(targetURL, fetchOptions);
 
-    console.log('Response status:', response.status);
+    logger.debug('Response status:', response.status);
 
     // Create response headers
     const responseHeaders = new Headers();
@@ -156,7 +159,7 @@ async function handleProxyRequest(request: Request, path: string | undefined) {
       responseHeaders.set('x-redirected-url', response.url);
     }
 
-    console.log('Response headers:', Object.fromEntries(responseHeaders.entries()));
+    logger.debug('Response headers:', Object.fromEntries(responseHeaders.entries()));
 
     // Return the response with the target's body stream piped directly
     return new Response(response.body, {
@@ -165,7 +168,7 @@ async function handleProxyRequest(request: Request, path: string | undefined) {
       headers: responseHeaders,
     });
   } catch (error) {
-    console.error('Proxy error:', error);
+    logger.error('Proxy error:', error);
     return json(
       {
         error: 'Proxy error',

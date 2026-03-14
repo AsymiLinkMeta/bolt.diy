@@ -1,4 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('Security');
 
 // Rate limiting store (in-memory for serverless environments)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -223,7 +226,7 @@ export function withSecurity<T extends (args: ActionFunctionArgs | LoaderFunctio
         headers: responseHeaders,
       });
     } catch (error) {
-      console.error('Security-wrapped handler error:', error);
+      logger.error('Security-wrapped handler error:', error);
 
       const errorMessage = sanitizeErrorMessage(error, process.env.NODE_ENV === 'development');
 

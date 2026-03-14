@@ -2,6 +2,9 @@ import { json } from '@remix-run/cloudflare';
 import { getApiKeysFromCookie } from '~/lib/api/cookies';
 import { withSecurity } from '~/lib/security';
 import type { GitHubUserResponse, GitHubStats } from '~/types/GitHub';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubStats');
 
 async function githubStatsLoader({ request, context }: { request: Request; context: any }) {
   try {
@@ -27,7 +30,7 @@ async function githubStatsLoader({ request, context }: { request: Request; conte
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `Bearer ${githubToken}`,
-        'User-Agent': 'bolt.diy-app',
+        'User-Agent': 'asymilink-ai-app',
       },
     });
 
@@ -53,7 +56,7 @@ async function githubStatsLoader({ request, context }: { request: Request; conte
           headers: {
             Accept: 'application/vnd.github.v3+json',
             Authorization: `Bearer ${githubToken}`,
-            'User-Agent': 'bolt.diy-app',
+            'User-Agent': 'asymilink-ai-app',
           },
         },
       );
@@ -80,7 +83,7 @@ async function githubStatsLoader({ request, context }: { request: Request; conte
             headers: {
               Accept: 'application/vnd.github.v3+json',
               Authorization: `Bearer ${githubToken}`,
-              'User-Agent': 'bolt.diy-app',
+              'User-Agent': 'asymilink-ai-app',
             },
           });
 
@@ -104,7 +107,7 @@ async function githubStatsLoader({ request, context }: { request: Request; conte
 
           return repo;
         } catch (error) {
-          console.warn(`Failed to fetch branches for ${repo.full_name}:`, error);
+          logger.warn(`Failed to fetch branches for ${repo.full_name}:`, error);
           return repo;
         }
       }),
@@ -181,7 +184,7 @@ async function githubStatsLoader({ request, context }: { request: Request; conte
 
     return json(stats);
   } catch (error) {
-    console.error('Error fetching GitHub stats:', error);
+    logger.error('Error fetching GitHub stats:', error);
     return json(
       {
         error: 'Failed to fetch GitHub statistics',

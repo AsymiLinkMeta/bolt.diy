@@ -22,6 +22,9 @@ import type { Snapshot } from './types';
 import { webcontainer } from '~/lib/webcontainer';
 import { detectProjectCommands, createCommandActionsString } from '~/utils/projectCommands';
 import type { ContextAnnotation } from '~/types/context';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('ChatHistory');
 
 export interface ChatHistoryItem {
   id: string;
@@ -69,10 +72,6 @@ export function useChatHistory() {
       ])
         .then(async ([storedMessages, snapshot]) => {
           if (storedMessages && storedMessages.messages.length > 0) {
-            /*
-             * const snapshotStr = localStorage.getItem(`snapshot:${mixedId}`); // Remove localStorage usage
-             * const snapshot: Snapshot = snapshotStr ? JSON.parse(snapshotStr) : { chatIndex: 0, files: {} }; // Use snapshot from DB
-             */
             const validSnapshot = snapshot || { chatIndex: '', files: {} }; // Ensure snapshot is not undefined
             const summary = validSnapshot.summary;
 
@@ -130,7 +129,7 @@ export function useChatHistory() {
                   role: 'assistant',
 
                   // Combine followup message and the artifact with files and command actions
-                  content: `Bolt Restored your chat from a snapshot. You can revert this message to load the full chat history.
+                  content: `AsymiLink AI restored your chat from a snapshot. You can revert this message to load the full chat history.
                   <boltArtifact id="restored-project-setup" title="Restored Project & Setup" type="bundled">
                   ${Object.entries(snapshot?.files || {})
                     .map(([key, value]) => {
@@ -186,7 +185,7 @@ ${value.content}
           setReady(true);
         })
         .catch((error) => {
-          console.error(error);
+          logger.error(error);
 
           logStore.logError('Failed to load chat messages or snapshot', error); // Updated error message
           toast.error('Failed to load chat: ' + error.message); // More specific error
@@ -211,11 +210,10 @@ ${value.content}
         summary: chatSummary,
       };
 
-      // localStorage.setItem(`snapshot:${id}`, JSON.stringify(snapshot)); // Remove localStorage usage
       try {
         await setSnapshot(db, id, snapshot);
       } catch (error) {
-        console.error('Failed to save snapshot:', error);
+        logger.error('Failed to save snapshot:', error);
         toast.error('Failed to save chat snapshot.');
       }
     },
@@ -223,7 +221,6 @@ ${value.content}
   );
 
   const restoreSnapshot = useCallback(async (id: string, snapshot?: Snapshot) => {
-    // const snapshotStr = localStorage.getItem(`snapshot:${id}`); // Remove localStorage usage
     const container = await webcontainer;
 
     const validSnapshot = snapshot || { chatIndex: '', files: {} };
@@ -270,7 +267,7 @@ ${value.content}
         chatMetadata.set(metadata);
       } catch (error) {
         toast.error('Failed to update chat metadata');
-        console.error(error);
+        logger.error(error);
       }
     },
     storeMessageHistory: async (messages: Message[]) => {
@@ -326,7 +323,7 @@ ${value.content}
       const finalChatId = chatId.get();
 
       if (!finalChatId) {
-        console.error('Cannot save messages, chat ID is not set.');
+        logger.error('Cannot save messages, chat ID is not set.');
         toast.error('Failed to save chat messages: Chat ID missing.');
 
         return;
@@ -353,7 +350,7 @@ ${value.content}
         toast.success('Chat duplicated successfully');
       } catch (error) {
         toast.error('Failed to duplicate chat');
-        console.log(error);
+        logger.debug(error);
       }
     },
     importChat: async (description: string, messages: Message[], metadata?: IChatMetadata) => {

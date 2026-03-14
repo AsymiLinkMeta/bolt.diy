@@ -8,7 +8,11 @@ import { openDatabase } from '~/lib/persistence/db';
 import { getAllChats, type Chat } from '~/lib/persistence/chats';
 import { DataVisualization } from './DataVisualization';
 import { classNames } from '~/utils/classNames';
+import { createScopedLogger } from '~/utils/logger';
+
 import { toast } from 'react-toastify';
+
+const logger = createScopedLogger('DataTab');
 
 // Create a custom hook to connect to the boltHistory database
 function useBoltHistoryDB() {
@@ -141,7 +145,7 @@ export function DataTab() {
   // Load available chats
   useEffect(() => {
     if (db) {
-      console.log('Loading chats from boltHistory database', {
+      logger.debug('Loading chats from boltHistory database', {
         name: db.name,
         version: db.version,
         objectStoreNames: Array.from(db.objectStoreNames),
@@ -149,7 +153,7 @@ export function DataTab() {
 
       getAllChats(db)
         .then((chats) => {
-          console.log('Found chats:', chats.length);
+          logger.debug('Found chats:', chats.length);
 
           // Cast to ExtendedChat to handle additional properties
           const extendedChats = chats as ExtendedChat[];
@@ -159,7 +163,7 @@ export function DataTab() {
           setChatItems(extendedChats.map((chat) => createChatItem(chat)));
         })
         .catch((error) => {
-          console.error('Error loading chats:', error);
+          logger.error('Error loading chats:', error);
           toast.error('Failed to load chats: ' + (error instanceof Error ? error.message : 'Unknown error'));
         });
     }
@@ -309,7 +313,7 @@ export function DataTab() {
                           return;
                         }
 
-                        console.log('Database information:', {
+                        logger.debug('Database information:', {
                           name: db.name,
                           version: db.version,
                           objectStoreNames: Array.from(db.objectStoreNames),
@@ -322,7 +326,7 @@ export function DataTab() {
 
                         await handleExportAllChats();
                       } catch (error) {
-                        console.error('Error exporting chats:', error);
+                        logger.error('Error exporting chats:', error);
                         toast.error(
                           `Failed to export chats: ${error instanceof Error ? error.message : 'Unknown error'}`,
                         );

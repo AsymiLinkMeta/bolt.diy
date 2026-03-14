@@ -1,5 +1,8 @@
 import { json } from '@remix-run/cloudflare';
 import JSZip from 'jszip';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubTemplate');
 
 // Function to detect if we're running in Cloudflare
 function isCloudflareEnvironment(context: any): boolean {
@@ -22,7 +25,7 @@ async function fetchRepoContentsCloudflare(repo: string, githubToken?: string) {
   const repoResponse = await fetch(`${baseUrl}/repos/${repo}`, {
     headers: {
       Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'bolt.diy-app',
+      'User-Agent': 'asymilink-ai-app',
       ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
     },
   });
@@ -38,7 +41,7 @@ async function fetchRepoContentsCloudflare(repo: string, githubToken?: string) {
   const treeResponse = await fetch(`${baseUrl}/repos/${repo}/git/trees/${defaultBranch}?recursive=1`, {
     headers: {
       Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'bolt.diy-app',
+      'User-Agent': 'asymilink-ai-app',
       ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
     },
   });
@@ -84,13 +87,13 @@ async function fetchRepoContentsCloudflare(repo: string, githubToken?: string) {
         const contentResponse = await fetch(`${baseUrl}/repos/${repo}/contents/${file.path}`, {
           headers: {
             Accept: 'application/vnd.github.v3+json',
-            'User-Agent': 'bolt.diy-app',
+            'User-Agent': 'asymilink-ai-app',
             ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
           },
         });
 
         if (!contentResponse.ok) {
-          console.warn(`Failed to fetch ${file.path}: ${contentResponse.status}`);
+          logger.warn(`Failed to fetch ${file.path}: ${contentResponse.status}`);
           return null;
         }
 
@@ -103,7 +106,7 @@ async function fetchRepoContentsCloudflare(repo: string, githubToken?: string) {
           content,
         };
       } catch (error) {
-        console.warn(`Error fetching ${file.path}:`, error);
+        logger.warn(`Error fetching ${file.path}:`, error);
         return null;
       }
     });
@@ -128,7 +131,7 @@ async function fetchRepoContentsZip(repo: string, githubToken?: string) {
   const releaseResponse = await fetch(`${baseUrl}/repos/${repo}/releases/latest`, {
     headers: {
       Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'bolt.diy-app',
+      'User-Agent': 'asymilink-ai-app',
       ...(githubToken ? { Authorization: `Bearer ${githubToken}` } : {}),
     },
   });
@@ -227,9 +230,9 @@ export async function loader({ request, context }: { request: Request; context: 
 
     return json(filteredFiles);
   } catch (error) {
-    console.error('Error processing GitHub template:', error);
-    console.error('Repository:', repo);
-    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    logger.error('Error processing GitHub template:', error);
+    logger.error('Repository:', repo);
+    logger.error('Error details:', error instanceof Error ? error.message : String(error));
 
     return json(
       {

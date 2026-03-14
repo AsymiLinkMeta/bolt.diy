@@ -2,16 +2,20 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { useStore } from '@nanostores/react';
 import { classNames } from '~/utils/classNames';
 import { getLocalStorage } from '~/lib/persistence/localStorage';
 import type { GitLabUserResponse, GitLabProjectInfo } from '~/types/GitLab';
 import { logStore } from '~/lib/stores/logs';
 import { chatId } from '~/lib/persistence/useChatHistory';
-import { useStore } from '@nanostores/react';
+import { createScopedLogger } from '~/utils/logger';
+
 import { GitLabApiService } from '~/lib/services/gitlabApiService';
 import { SearchInput, EmptyState, StatusIndicator, Badge } from '~/components/ui';
 import { formatSize } from '~/utils/formatSize';
 import { GitLabAuthDialog } from '~/components/@settings/tabs/gitlab/components/GitLabAuthDialog';
+
+const logger = createScopedLogger('GitLabDeployment');
 
 interface GitLabDeploymentDialogProps {
   isOpen: boolean;
@@ -90,7 +94,7 @@ export function GitLabDeploymentDialog({ isOpen, onClose, projectName, files }: 
       const repos = await apiService.getProjects();
       setRecentRepos(repos);
     } catch (error) {
-      console.error('Failed to fetch GitLab repositories:', error);
+      logger.error('Failed to fetch GitLab repositories:', error);
       logStore.logError('Failed to fetch GitLab repositories', { error });
       toast.error('Failed to fetch recent repositories');
     } finally {
@@ -201,7 +205,7 @@ export function GitLabDeploymentDialog({ isOpen, onClose, projectName, files }: 
         isNewProject: !projectExists,
       });
     } catch (error) {
-      console.error('Error pushing to GitLab:', error);
+      logger.error('Error pushing to GitLab:', error);
 
       logStore.logError('GitLab deployment failed', {
         error,

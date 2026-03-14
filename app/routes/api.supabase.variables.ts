@@ -1,4 +1,7 @@
 import { json, type ActionFunctionArgs } from '@remix-run/cloudflare';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('SupabaseVariables');
 
 export async function action({ request }: ActionFunctionArgs) {
   try {
@@ -26,7 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     return json({ apiKeys });
   } catch (error) {
-    console.error('Error fetching project API keys:', error);
+    logger.error('Error fetching project API keys:', error);
     return json({ error: error instanceof Error ? error.message : 'Unknown error occurred' }, { status: 500 });
   }
 }

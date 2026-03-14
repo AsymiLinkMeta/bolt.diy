@@ -6,6 +6,9 @@ import type {
   GitHubStats,
   GitHubLanguageStats,
 } from '~/types/GitHub';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('GitHubApiService');
 
 export interface GitHubApiServiceConfig {
   token?: string;
@@ -52,7 +55,7 @@ export class GitHubApiServiceClass {
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `${this._config.tokenType === 'classic' ? 'token' : 'Bearer'} ${this._config.token}`,
-        'User-Agent': 'Bolt.diy',
+        'User-Agent': 'AsymiLink AI',
         ...options.headers,
       },
       ...options,
@@ -138,7 +141,7 @@ export class GitHubApiServiceClass {
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `${this._config.tokenType === 'classic' ? 'token' : 'Bearer'} ${this._config.token}`,
-        'User-Agent': 'Bolt.diy',
+        'User-Agent': 'AsymiLink AI',
       },
     });
 
@@ -166,7 +169,7 @@ export class GitHubApiServiceClass {
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `${this._config.tokenType === 'classic' ? 'token' : 'Bearer'} ${this._config.token}`,
-        'User-Agent': 'Bolt.diy',
+        'User-Agent': 'AsymiLink AI',
       },
     });
 
@@ -194,7 +197,7 @@ export class GitHubApiServiceClass {
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `${this._config.tokenType === 'classic' ? 'token' : 'Bearer'} ${this._config.token}`,
-        'User-Agent': 'Bolt.diy',
+        'User-Agent': 'AsymiLink AI',
       },
     });
 
@@ -238,7 +241,7 @@ export class GitHubApiServiceClass {
         if (result.status === 'fulfilled') {
           detailedRepos.push(result.value);
         } else {
-          console.error(`Failed to fetch details for ${batch[index].full_name}:`, result.reason);
+          logger.error(`Failed to fetch details for ${batch[index].full_name}:`, result.reason);
 
           // Fallback to original repo data
           detailedRepos.push(batch[index]);
@@ -398,7 +401,7 @@ export class GitHubApiServiceClass {
 
       return githubStats;
     } catch (error) {
-      console.error('Error generating comprehensive stats:', error);
+      logger.error('Error generating comprehensive stats:', error);
       throw error;
     }
   }

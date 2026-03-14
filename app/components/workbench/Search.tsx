@@ -4,6 +4,9 @@ import { workbenchStore } from '~/lib/stores/workbench';
 import { webcontainer } from '~/lib/webcontainer';
 import { WORK_DIR } from '~/utils/constants';
 import { debounce } from '~/utils/debounce';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('Search');
 
 interface DisplayMatch {
   path: string;
@@ -20,7 +23,7 @@ async function performTextSearch(
   onProgress: (results: DisplayMatch[]) => void,
 ): Promise<void> {
   if (!instance || typeof instance.internal?.textSearch !== 'function') {
-    console.error('WebContainer instance not available or internal searchText method is missing/not a function.');
+    logger.error('WebContainer instance not available or internal searchText method is missing/not a function.');
 
     return;
   }
@@ -69,7 +72,7 @@ async function performTextSearch(
   try {
     await instance.internal.textSearch(query, searchOptions, progressCallback);
   } catch (error) {
-    console.error('Error during internal text search:', error);
+    logger.error('Error during internal text search:', error);
   }
 }
 
@@ -147,7 +150,7 @@ export function Search() {
 
       await performTextSearch(instance, query, options, progressHandler);
     } catch (error) {
-      console.error('Failed to initiate search:', error);
+      logger.error('Failed to initiate search:', error);
     } finally {
       const elapsed = Date.now() - start;
 

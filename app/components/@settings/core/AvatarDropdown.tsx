@@ -4,6 +4,9 @@ import { useStore } from '@nanostores/react';
 import { classNames } from '~/utils/classNames';
 import { profileStore } from '~/lib/stores/profile';
 import type { TabType, Profile } from './types';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('AvatarDropdown');
 
 interface AvatarDropdownProps {
   onSelectTab: (tab: TabType) => void;
@@ -123,7 +126,7 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
               'group',
             )}
             onClick={() =>
-              window.open('https://github.com/stackblitz-labs/bolt.diy/issues/new?template=bug_report.yml', '_blank')
+              window.open('https://github.com/asymilink/asymilink-ai/issues/new?template=bug_report.yml', '_blank')
             }
           >
             <div className="i-ph:bug w-4 h-4 text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors" />
@@ -145,7 +148,7 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
                 const { downloadDebugLog } = await import('~/utils/debugLogger');
                 await downloadDebugLog();
               } catch (error) {
-                console.error('Failed to download debug log:', error);
+                logger.error('Failed to download debug log:', error);
               }
             }}
           >
@@ -163,7 +166,7 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
               'outline-none',
               'group',
             )}
-            onClick={() => window.open('https://stackblitz-labs.github.io/bolt.diy/', '_blank')}
+            onClick={() => window.open('https://github.com/asymilink/asymilink-ai/wiki', '_blank')}
           >
             <div className="i-ph:question w-4 h-4 text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors" />
             Help & Documentation

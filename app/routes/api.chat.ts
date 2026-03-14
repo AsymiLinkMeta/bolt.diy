@@ -116,7 +116,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           } satisfies ProgressAnnotation);
 
           // Create a summary of the chat
-          console.log(`Messages count: ${processedMessages.length}`);
+          logger.debug(`Messages count: ${processedMessages.length}`);
 
           summary = await createSummary({
             messages: [...processedMessages],
@@ -159,7 +159,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           } satisfies ProgressAnnotation);
 
           // Select context files
-          console.log(`Messages count: ${processedMessages.length}`);
+          logger.debug(`Messages count: ${processedMessages.length}`);
           filteredFiles = await selectContext({
             messages: [...processedMessages],
             env: context.cloudflare?.env,
@@ -204,7 +204,6 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
             message: 'Code Files Selected',
           } satisfies ProgressAnnotation);
 
-          // logger.debug('Code Files Selected');
         }
 
         const options: StreamingOptions = {
@@ -245,7 +244,6 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
               } satisfies ProgressAnnotation);
               await new Promise((resolve) => setTimeout(resolve, 0));
 
-              // stream.close();
               return;
             }
 

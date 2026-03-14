@@ -9,6 +9,9 @@ import { Button } from '~/components/ui/Button';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '~/components/ui/Collapsible';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '~/components/ui/Badge';
+import { createScopedLogger } from '~/utils/logger';
+
+const logger = createScopedLogger('NetlifyTab');
 
 interface ConnectionTestResult {
   status: 'success' | 'error' | 'testing';
@@ -479,7 +482,7 @@ export default function NetlifyTab() {
       // Fetch stats after successful connection
       fetchNetlifyStats(tokenInput);
     } catch (error) {
-      console.error('Error connecting to Netlify:', error);
+      logger.error('Error connecting to Netlify:', error);
       toast.error(`Failed to connect to Netlify: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsConnecting(false);
@@ -567,7 +570,7 @@ export default function NetlifyTab() {
 
               return { site, deploys: siteDeploys, builds: siteBuilds };
             } catch (error) {
-              console.error(`Failed to fetch data for site ${site.name}:`, error);
+              logger.error(`Failed to fetch data for site ${site.name}:`, error);
               return { site, deploys: [], builds: [] };
             }
           });
@@ -614,7 +617,7 @@ export default function NetlifyTab() {
 
       toast.success('Netlify stats updated');
     } catch (error) {
-      console.error('Error fetching Netlify stats:', error);
+      logger.error('Error fetching Netlify stats:', error);
       toast.error(`Failed to fetch Netlify stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setFetchingStats(false);
