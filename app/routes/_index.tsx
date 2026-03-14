@@ -24,7 +24,7 @@ export const loader = () => json({});
  */
 export default function Index() {
   return (
-    <div className="flex flex-col h-full w-full" style={{ background: 'linear-gradient(135deg, #0B1120 0%, #0F2B5B 50%, #0B1120 100%)', minHeight: '100vh' }}>
+    <div className="flex flex-col h-full w-full relative" style={{ minHeight: '100vh' }}>
       <BackgroundRays />
       <Header />
       <ClientOnly fallback={<BaseChat />}>{() => <Chat />}</ClientOnly>

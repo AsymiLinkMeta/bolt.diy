@@ -11,13 +11,19 @@ html,
 body {
   height: 100%;
   width: 100%;
-  background-color: var(--bolt-elements-bg-depth-1);
+  background: #0B1120;
+  background-attachment: fixed;
 }
 
 :root[data-theme='dark'] body,
 :root[data-theme='dark'] html {
   background: linear-gradient(135deg, #0B1120 0%, #0F2B5B 50%, #0B1120 100%);
   background-attachment: fixed;
+}
+
+:root[data-theme='light'] body,
+:root[data-theme='light'] html {
+  background: #f0f4f8;
 }
 
 :root {

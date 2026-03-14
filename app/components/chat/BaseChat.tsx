@@ -320,12 +320,33 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
         <div className="flex flex-col lg:flex-row overflow-y-auto w-full h-full">
           <div className={classNames(styles.Chat, 'flex flex-col flex-grow lg:min-w-[var(--chat-min-width)] h-full')}>
             {!chatStarted && (
-              <div id="intro" className="mt-[16vh] max-w-2xl mx-auto text-center px-4 lg:px-0">
-                <h1 className="text-3xl lg:text-6xl font-bold text-bolt-elements-textPrimary mb-4 animate-fade-in">
-                  Where ideas begin
+              <div id="intro" className="mt-[12vh] max-w-3xl mx-auto text-center px-4 lg:px-0">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <img
+                    src="/AsymiLink_Logo_Blue_--sref_httpss.mj.runIOBG4O6_f687d87f-4b35-4315-b3cd-2bb4911e97de_(1)-fotor-20251021193622.png"
+                    alt="AsymiLink AI"
+                    className="h-12 w-auto"
+                    style={{ filter: 'drop-shadow(0 0 20px rgba(0,245,255,0.4))' }}
+                  />
+                </div>
+                <h1
+                  className="text-4xl lg:text-6xl font-bold mb-4 animate-fade-in"
+                  style={{
+                    background: 'linear-gradient(135deg, #ffffff 0%, #00f5ff 50%, #60a5fa 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    letterSpacing: '-0.03em',
+                    lineHeight: '1.1',
+                  }}
+                >
+                  What do you want to build?
                 </h1>
-                <p className="text-md lg:text-xl mb-8 text-bolt-elements-textSecondary animate-fade-in animation-delay-200">
-                  Bring ideas to life in seconds or get help on existing projects.
+                <p
+                  className="text-lg lg:text-xl mb-8 animate-fade-in"
+                  style={{ color: 'rgba(148,163,184,0.9)', animationDelay: '100ms' }}
+                >
+                  Prompt, run, edit, and deploy full-stack web apps.
                 </p>
               </div>
             )}
