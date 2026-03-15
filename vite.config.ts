@@ -20,6 +20,35 @@ export default defineConfig((config) => {
       target: 'esnext',
       rollupOptions: {
         maxParallelFileOps: 1,
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (
+                id.includes('@codemirror') ||
+                id.includes('@lezer') ||
+                id.includes('@uiw/codemirror')
+              ) {
+                return 'vendor-codemirror';
+              }
+              if (id.includes('@ai-sdk') || id.includes('ai/')) {
+                return 'vendor-ai';
+              }
+              if (id.includes('shiki')) {
+                return 'vendor-shiki';
+              }
+              if (
+                id.includes('react-dom') ||
+                id.includes('react/') ||
+                id.includes('/react.') ||
+                id.includes('framer-motion') ||
+                id.includes('@radix-ui')
+              ) {
+                return 'vendor-react';
+              }
+              return 'vendor';
+            }
+          },
+        },
       },
       sourcemap: false,
       minify: 'esbuild',
