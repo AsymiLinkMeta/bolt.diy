@@ -309,6 +309,7 @@ export const Workbench = memo(
     const streaming = useStore(streamingState);
     const { exportChat } = useChatHistory();
     const [isSyncing, setIsSyncing] = useState(false);
+    const previewStore = usePreviewStore();
 
     const setSelectedView = (view: WorkbenchViewType) => {
       workbenchStore.currentView.set(view);
@@ -340,14 +341,12 @@ export const Workbench = memo(
       workbenchStore
         .saveCurrentDocument()
         .then(() => {
-          // Explicitly refresh all previews after a file save
-          const previewStore = usePreviewStore();
           previewStore.refreshAllPreviews();
         })
         .catch(() => {
           toast.error('Failed to update file content');
         });
-    }, []);
+    }, [previewStore]);
 
     const onFileReset = useCallback(() => {
       workbenchStore.resetCurrentDocument();

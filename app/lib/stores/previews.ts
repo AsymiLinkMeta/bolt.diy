@@ -1,6 +1,7 @@
 import type { WebContainer } from '@webcontainer/api';
 import { atom } from 'nanostores';
 import { createScopedLogger } from '~/utils/logger';
+import { webcontainer } from '~/lib/webcontainer';
 
 const logger = createScopedLogger('PreviewsStore');
 
@@ -305,11 +306,7 @@ let previewsStore: PreviewsStore | null = null;
 
 export function usePreviewStore() {
   if (!previewsStore) {
-    /*
-     * Initialize with a Promise that resolves to WebContainer
-     * This should match how you're initializing WebContainer elsewhere
-     */
-    previewsStore = new PreviewsStore(Promise.resolve({} as WebContainer));
+    previewsStore = new PreviewsStore(webcontainer);
   }
 
   return previewsStore;
