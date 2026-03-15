@@ -1,7 +1,6 @@
 import type { WebContainer } from '@webcontainer/api';
 import { atom } from 'nanostores';
 import { createScopedLogger } from '~/utils/logger';
-import { webcontainer } from '~/lib/webcontainer';
 
 const logger = createScopedLogger('PreviewsStore');
 
@@ -304,8 +303,9 @@ export class PreviewsStore {
 // Create a singleton instance
 let previewsStore: PreviewsStore | null = null;
 
-export function usePreviewStore() {
+export async function usePreviewStore() {
   if (!previewsStore) {
+    const { webcontainer } = await import('~/lib/webcontainer');
     previewsStore = new PreviewsStore(webcontainer);
   }
 

@@ -309,7 +309,11 @@ export const Workbench = memo(
     const streaming = useStore(streamingState);
     const { exportChat } = useChatHistory();
     const [isSyncing, setIsSyncing] = useState(false);
-    const previewStore = usePreviewStore();
+    const [previewStore, setPreviewStore] = useState<Awaited<ReturnType<typeof usePreviewStore>> | null>(null);
+
+    useEffect(() => {
+      usePreviewStore().then(setPreviewStore);
+    }, []);
 
     const setSelectedView = (view: WorkbenchViewType) => {
       workbenchStore.currentView.set(view);
@@ -341,7 +345,7 @@ export const Workbench = memo(
       workbenchStore
         .saveCurrentDocument()
         .then(() => {
-          previewStore.refreshAllPreviews();
+          previewStore?.refreshAllPreviews();
         })
         .catch(() => {
           toast.error('Failed to update file content');
