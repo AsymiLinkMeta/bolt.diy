@@ -16,47 +16,43 @@ interface ConfiguredProvidersResponse {
   providers: ConfiguredProvider[];
 }
 
+const PROVIDER_ENV_KEYS: Record<string, { baseUrlKey?: string; apiTokenKey?: string }> = {
+  Ollama: { baseUrlKey: 'OLLAMA_API_BASE_URL' },
+  OpenAILike: { baseUrlKey: 'OPENAI_LIKE_API_BASE_URL', apiTokenKey: 'OPENAI_LIKE_API_KEY' },
+  LMStudio: { baseUrlKey: 'LMSTUDIO_API_BASE_URL' },
+};
+
 /**
- * API endpoint that detects which providers are configured via environment variables
- * This helps auto-enable providers that have been set up by the user
+ * API endpoint that detects which providers are configured via environment variables.
+ * This helps auto-enable providers that have been set up by the user.
  */
 export const loader: LoaderFunction = async ({ context }) => {
   try {
     const llmManager = LLMManager.getInstance(context?.cloudflare?.env as any);
     const configuredProviders: ConfiguredProvider[] = [];
 
-    // Check each local provider for environment configuration
     for (const providerName of LOCAL_PROVIDERS) {
-      const providerInstance = llmManager.getProvider(providerName);
       let isConfigured = false;
       let configMethod: 'environment' | 'none' = 'none';
 
-      if (providerInstance) {
-        const config = providerInstance.config;
+      const envKeys = PROVIDER_ENV_KEYS[providerName];
 
-        /*
-         * Check if required environment variables are set
-         * For providers with baseUrlKey (Ollama, LMStudio, OpenAILike)
-         */
-        if (config.baseUrlKey) {
-          const baseUrlEnvVar = config.baseUrlKey;
+      if (envKeys) {
+        if (envKeys.baseUrlKey) {
+          const baseUrlEnvVar = envKeys.baseUrlKey;
           const cloudflareEnv = (context?.cloudflare?.env as Record<string, any>)?.[baseUrlEnvVar];
-          const processEnv = process.env[baseUrlEnvVar];
+          const processEnv = typeof process !== 'undefined' ? process.env[baseUrlEnvVar] : undefined;
           const managerEnv = llmManager.env[baseUrlEnvVar];
 
           const envBaseUrl = cloudflareEnv || processEnv || managerEnv;
 
-          /*
-           * Only consider configured if environment variable is explicitly set
-           * Don't count default config.baseUrl values or placeholder values
-           */
           const isValidEnvValue =
             envBaseUrl &&
             typeof envBaseUrl === 'string' &&
             envBaseUrl.trim().length > 0 &&
-            !envBaseUrl.includes('your_') && // Filter out placeholder values like "your_openai_like_base_url_here"
+            !envBaseUrl.includes('your_') &&
             !envBaseUrl.includes('_here') &&
-            envBaseUrl.startsWith('http'); // Must be a valid URL
+            envBaseUrl.startsWith('http');
 
           if (isValidEnvValue) {
             isConfigured = true;
@@ -64,22 +60,20 @@ export const loader: LoaderFunction = async ({ context }) => {
           }
         }
 
-        // For providers that might need API keys as well (check this separately, not as fallback)
-        if (config.apiTokenKey && !isConfigured) {
-          const apiTokenEnvVar = config.apiTokenKey;
+        if (envKeys.apiTokenKey && !isConfigured) {
+          const apiTokenEnvVar = envKeys.apiTokenKey;
           const envApiToken =
             (context?.cloudflare?.env as Record<string, any>)?.[apiTokenEnvVar] ||
-            process.env[apiTokenEnvVar] ||
+            (typeof process !== 'undefined' ? process.env[apiTokenEnvVar] : undefined) ||
             llmManager.env[apiTokenEnvVar];
 
-          // Only consider configured if API key is set and not a placeholder
           const isValidApiToken =
             envApiToken &&
             typeof envApiToken === 'string' &&
             envApiToken.trim().length > 0 &&
-            !envApiToken.includes('your_') && // Filter out placeholder values
+            !envApiToken.includes('your_') &&
             !envApiToken.includes('_here') &&
-            envApiToken.length > 10; // API keys are typically longer than 10 chars
+            envApiToken.length > 10;
 
           if (isValidApiToken) {
             isConfigured = true;
@@ -101,7 +95,6 @@ export const loader: LoaderFunction = async ({ context }) => {
   } catch (error) {
     logger.error('Error detecting configured providers:', error);
 
-    // Return default state on error
     return json<ConfiguredProvidersResponse>({
       providers: LOCAL_PROVIDERS.map((name) => ({
         name,

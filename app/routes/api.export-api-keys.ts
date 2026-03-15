@@ -1,6 +1,7 @@
 import type { LoaderFunction } from '@remix-run/cloudflare';
 import { LLMManager } from '~/lib/modules/llm/manager';
 import { getApiKeysFromCookie } from '~/lib/api/cookies';
+import { providerBaseUrlEnvKeys } from '~/utils/constants';
 
 export const loader: LoaderFunction = async ({ context, request }) => {
   // Get API keys from cookie
@@ -10,7 +11,7 @@ export const loader: LoaderFunction = async ({ context, request }) => {
   // Initialize the LLM manager to access environment variables
   const llmManager = LLMManager.getInstance(context?.cloudflare?.env as any);
 
-  // Get all provider instances to find their API token keys
+  // Get all provider instances
   const providers = llmManager.getAllProviders();
 
   // Create a comprehensive API keys object
@@ -18,11 +19,12 @@ export const loader: LoaderFunction = async ({ context, request }) => {
 
   // For each provider, check all possible sources for API keys
   for (const provider of providers) {
-    if (!provider.config.apiTokenKey) {
+    const envKeys = providerBaseUrlEnvKeys[provider.name];
+    if (!envKeys?.apiTokenKey) {
       continue;
     }
 
-    const envVarName = provider.config.apiTokenKey;
+    const envVarName = envKeys.apiTokenKey;
 
     // Skip if we already have this provider's key from cookies
     if (apiKeys[provider.name]) {
@@ -32,7 +34,7 @@ export const loader: LoaderFunction = async ({ context, request }) => {
     // Check environment variables in order of precedence
     const envValue =
       (context?.cloudflare?.env as Record<string, any>)?.[envVarName] ||
-      process.env[envVarName] ||
+      (typeof process !== 'undefined' ? process.env[envVarName] : undefined) ||
       llmManager.env[envVarName];
 
     if (envValue) {

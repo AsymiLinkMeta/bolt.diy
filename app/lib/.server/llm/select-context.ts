@@ -1,23 +1,57 @@
 import { generateText, type CoreTool, type GenerateTextResult, type Message } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
 import ignore from 'ignore';
-import type { IProviderSetting } from '~/types/model';
 import { IGNORE_PATTERNS, type FileMap } from './constants';
-import { DEFAULT_MODEL, DEFAULT_PROVIDER, PROVIDER_LIST } from '~/utils/constants';
+import { DEFAULT_MODEL, DEFAULT_PROVIDER } from '~/utils/constants';
 import { createFilesContext, extractCurrentContext, extractPropertiesFromMessage, simplifyBoltActions } from './utils';
 import { createScopedLogger } from '~/utils/logger';
-import { LLMManager } from '~/lib/modules/llm/manager';
-
-// Common patterns to ignore, similar to .gitignore
 
 const ig = ignore().add(IGNORE_PATTERNS);
 const logger = createScopedLogger('select-context');
+
+function getExternalApiClient(options: {
+  providerName?: string;
+  apiKeys?: Record<string, string>;
+  providerSettings?: Record<string, any>;
+  serverEnv?: Record<string, string>;
+}) {
+  const { providerName, apiKeys, providerSettings, serverEnv } = options;
+  const resolveDockerUrl = (url: string): string => {
+    const isDocker =
+      (typeof process !== 'undefined' && process.env?.RUNNING_IN_DOCKER === 'true') ||
+      serverEnv?.RUNNING_IN_DOCKER === 'true';
+    if (!isDocker) return url;
+    return url.replace('localhost', 'host.docker.internal').replace('127.0.0.1', 'host.docker.internal');
+  };
+
+  if (providerName === 'OpenAILike') {
+    const baseUrl =
+      providerSettings?.OpenAILike?.baseUrl ||
+      serverEnv?.OPENAI_LIKE_API_BASE_URL ||
+      (typeof process !== 'undefined' ? process.env?.OPENAI_LIKE_API_BASE_URL : undefined) ||
+      'http://localhost:11434/v1';
+    const apiKey =
+      apiKeys?.OpenAILike ||
+      serverEnv?.OPENAI_LIKE_API_KEY ||
+      (typeof process !== 'undefined' ? process.env?.OPENAI_LIKE_API_KEY : undefined) ||
+      'no-key';
+    return createOpenAI({ baseURL: resolveDockerUrl(baseUrl), apiKey });
+  }
+
+  const baseUrl =
+    providerSettings?.Ollama?.baseUrl ||
+    serverEnv?.OLLAMA_API_BASE_URL ||
+    (typeof process !== 'undefined' ? process.env?.OLLAMA_API_BASE_URL : undefined) ||
+    'http://localhost:11434';
+  return createOpenAI({ baseURL: resolveDockerUrl(`${baseUrl}/v1`), apiKey: 'ollama' });
+}
 
 export async function selectContext(props: {
   messages: Message[];
   env?: Env;
   apiKeys?: Record<string, string>;
   files: FileMap;
-  providerSettings?: Record<string, IProviderSetting>;
+  providerSettings?: Record<string, any>;
   promptId?: string;
   contextOptimization?: boolean;
   summary: string;
@@ -26,55 +60,29 @@ export async function selectContext(props: {
   const { messages, env: serverEnv, apiKeys, files, providerSettings, summary, onFinish } = props;
   let currentModel = DEFAULT_MODEL;
   let currentProvider = DEFAULT_PROVIDER.name;
+
   const processedMessages = messages.map((message) => {
     if (message.role === 'user') {
       const { model, provider, content } = extractPropertiesFromMessage(message);
       currentModel = model;
       currentProvider = provider;
-
       return { ...message, content };
-    } else if (message.role == 'assistant') {
+    } else if (message.role === 'assistant') {
       let content = message.content;
-
       content = simplifyBoltActions(content);
-
       content = content.replace(/<div class=\\"__boltThought__\\">.*?<\/div>/s, '');
       content = content.replace(/<think>.*?<\/think>/s, '');
-
       return { ...message, content };
     }
-
     return message;
   });
 
-  const provider = PROVIDER_LIST.find((p) => p.name === currentProvider) || DEFAULT_PROVIDER;
-  const staticModels = LLMManager.getInstance().getStaticModelListFromProvider(provider);
-  let modelDetails = staticModels.find((m) => m.name === currentModel);
-
-  if (!modelDetails) {
-    const modelsList = [
-      ...(provider.staticModels || []),
-      ...(await LLMManager.getInstance().getModelListFromProvider(provider, {
-        apiKeys,
-        providerSettings,
-        serverEnv: serverEnv as any,
-      })),
-    ];
-
-    if (!modelsList.length) {
-      throw new Error(`No models found for provider ${provider.name}`);
-    }
-
-    modelDetails = modelsList.find((m) => m.name === currentModel);
-
-    if (!modelDetails) {
-      // Fallback to first model
-      logger.warn(
-        `MODEL [${currentModel}] not found in provider [${provider.name}]. Falling back to first model. ${modelsList[0].name}`,
-      );
-      modelDetails = modelsList[0];
-    }
-  }
+  const client = getExternalApiClient({
+    providerName: currentProvider,
+    apiKeys,
+    providerSettings,
+    serverEnv: serverEnv as any,
+  });
 
   const { codeContext } = extractCurrentContext(processedMessages);
 
@@ -92,11 +100,7 @@ export async function selectContext(props: {
     const codeContextFiles: string[] = codeContext.files;
     Object.keys(files || {}).forEach((path) => {
       let relativePath = path;
-
-      if (path.startsWith('/home/project/')) {
-        relativePath = path.replace('/home/project/', '');
-      }
-
+      if (path.startsWith('/home/project/')) relativePath = path.replace('/home/project/', '');
       if (codeContextFiles.includes(relativePath)) {
         contextFiles[relativePath] = files[path];
         currrentFiles.push(relativePath);
@@ -112,68 +116,49 @@ export async function selectContext(props: {
       ? (message.content.find((item) => item.type === 'text')?.text as string) || ''
       : message.content;
 
-  const lastUserMessage = processedMessages.filter((x) => x.role == 'user').pop();
+  const lastUserMessage = processedMessages.filter((x) => x.role === 'user').pop();
 
   if (!lastUserMessage) {
     throw new Error('No user message found');
   }
 
-  // select files from the list of code file from the project that might be useful for the current request from the user
   const resp = await generateText({
-    system: `
-        You are a software engineer. You are working on a project. You have access to the following files:
+    system: `You are a software engineer. You are working on a project. You have access to the following files:
 
-        AVAILABLE FILES PATHS
-        ---
-        ${filePaths.map((path) => `- ${path}`).join('\n')}
-        ---
+AVAILABLE FILES PATHS
+---
+${filePaths.map((path) => `- ${path}`).join('\n')}
+---
 
-        You have following code loaded in the context buffer that you can refer to:
+You have following code loaded in the context buffer that you can refer to:
 
-        CURRENT CONTEXT BUFFER
-        ---
-        ${context}
-        ---
+CURRENT CONTEXT BUFFER
+---
+${context}
+---
 
-        Now, you are given a task. You need to select the files that are relevant to the task from the list of files above.
+Now, you are given a task. You need to select the files that are relevant to the task from the list of files above.
 
-        RESPONSE FORMAT:
-        your response should be in following format:
+RESPONSE FORMAT:
 ---
 <updateContextBuffer>
     <includeFile path="path/to/file"/>
     <excludeFile path="path/to/file"/>
 </updateContextBuffer>
----
-        * Your should start with <updateContextBuffer> and end with </updateContextBuffer>.
-        * You can include multiple <includeFile> and <excludeFile> tags in the response.
-        * You should not include any other text in the response.
-        * You should not include any file that is not in the list of files above.
-        * You should not include any file that is already in the context buffer.
-        * If no changes are needed, you can leave the response empty updateContextBuffer tag.
-        `,
-    prompt: `
-        ${summaryText}
+---`,
+    prompt: `${summaryText}
 
-        Users Question: ${extractTextContent(lastUserMessage)}
+Users Question: ${extractTextContent(lastUserMessage)}
 
-        update the context buffer with the files that are relevant to the task from the list of files above.
+update the context buffer with the files that are relevant to the task.
 
-        CRITICAL RULES:
-        * Only include relevant files in the context buffer.
-        * context buffer should not include any file that is not in the list of files above.
-        * context buffer is extremlly expensive, so only include files that are absolutely necessary.
-        * If no changes are needed, you can leave the response empty updateContextBuffer tag.
-        * Only 5 files can be placed in the context buffer at a time.
-        * if the buffer is full, you need to exclude files that is not needed and include files that is relevent.
-
-        `,
-    model: provider.getModelInstance({
-      model: currentModel,
-      serverEnv,
-      apiKeys,
-      providerSettings,
-    }),
+CRITICAL RULES:
+* Only include relevant files in the context buffer.
+* context buffer is extremely expensive, so only include files that are absolutely necessary.
+* If no changes are needed, you can leave the response empty updateContextBuffer tag.
+* Only 5 files can be placed in the context buffer at a time.
+* if the buffer is full, you need to exclude files that is not needed and include files that is relevant.`,
+    model: client(currentModel),
   });
 
   const response = resp.text;
@@ -193,36 +178,24 @@ export async function selectContext(props: {
       ?.map((x) => x.replace('<excludeFile path="', '').replace('"', '')) || [];
 
   const filteredFiles: FileMap = {};
-  excludeFiles.forEach((path) => {
-    delete contextFiles[path];
-  });
+  excludeFiles.forEach((path) => { delete contextFiles[path]; });
   includeFiles.forEach((path) => {
     let fullPath = path;
-
-    if (!path.startsWith('/home/project/')) {
-      fullPath = `/home/project/${path}`;
-    }
-
+    if (!path.startsWith('/home/project/')) fullPath = `/home/project/${path}`;
     if (!filePaths.includes(fullPath)) {
       logger.error(`File ${path} is not in the list of files above.`);
       return;
     }
-
-    if (currrentFiles.includes(path)) {
-      return;
-    }
-
+    if (currrentFiles.includes(path)) return;
     filteredFiles[path] = files[fullPath];
   });
 
-  if (onFinish) {
-    onFinish(resp);
-  }
+  if (onFinish) onFinish(resp);
 
   const totalFiles = Object.keys(filteredFiles).length;
   logger.info(`Total files: ${totalFiles}`);
 
-  if (totalFiles == 0) {
+  if (totalFiles === 0) {
     throw new Error(`Bolt failed to select files`);
   }
 
@@ -235,6 +208,5 @@ export function getFilePaths(files: FileMap) {
     const relPath = x.replace('/home/project/', '');
     return !ig.ignores(relPath);
   });
-
   return filePaths;
 }

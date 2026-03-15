@@ -4,9 +4,8 @@ export type ProviderInfo = {
   staticModels: ModelInfo[];
   name: string;
   getDynamicModels?: (
-    providerName: string,
     apiKeys?: Record<string, string>,
-    providerSettings?: IProviderSetting,
+    settings?: IProviderSetting,
     serverEnv?: Record<string, string>,
   ) => Promise<ModelInfo[]>;
   getApiKeyLink?: string;
