@@ -1,13 +1,14 @@
 .rayContainer {
-  // Theme-specific colors
-  --ray-color-primary: color-mix(in srgb, var(--accent-cyan, #00f5ff), transparent 55%);
-  --ray-color-secondary: color-mix(in srgb, var(--accent-blue, #60a5fa), transparent 55%);
-  --ray-color-accent: color-mix(in srgb, #3b82f6, transparent 55%);
+  // Modern purple gradient theme colors
+  --ray-color-primary: color-mix(in srgb, #a78bfa, transparent 50%);
+  --ray-color-secondary: color-mix(in srgb, #c4b5fd, transparent 55%);
+  --ray-color-accent: color-mix(in srgb, #8b5cf6, transparent 50%);
+  --ray-color-tertiary: color-mix(in srgb, #7c3aed, transparent 60%);
 
-  // Theme-specific gradients
-  --ray-gradient-primary: radial-gradient(var(--ray-color-primary) 0%, transparent 70%);
-  --ray-gradient-secondary: radial-gradient(var(--ray-color-secondary) 0%, transparent 70%);
-  --ray-gradient-accent: radial-gradient(var(--ray-color-accent) 0%, transparent 70%);
+  // Enhanced gradients with more depth
+  --ray-gradient-primary: radial-gradient(ellipse at center, var(--ray-color-primary) 0%, transparent 75%);
+  --ray-gradient-secondary: radial-gradient(ellipse at center, var(--ray-color-secondary) 0%, transparent 75%);
+  --ray-gradient-accent: radial-gradient(ellipse at center, var(--ray-color-accent) 0%, transparent 75%);
 
   position: fixed;
   inset: 0;

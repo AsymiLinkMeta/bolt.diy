@@ -10,30 +10,32 @@ export function Header() {
 
   return (
     <header
-      className={classNames('flex items-center px-4 border-b h-[var(--header-height)]', {
+      className={classNames('flex items-center px-6 border-b h-[var(--header-height)] backdrop-blur-sm transition-all duration-300', {
         'border-transparent': !chat.started,
-        'border-bolt-elements-borderColor': chat.started,
+        'border-bolt-elements-borderColor shadow-lg': chat.started,
       })}
-      style={{ background: 'transparent' }}
+      style={{
+        background: chat.started ? 'rgba(19, 19, 26, 0.8)' : 'transparent',
+      }}
     >
-      <div className="flex items-center gap-2 z-logo cursor-pointer">
-        <div className="i-ph:sidebar-simple-duotone text-xl text-bolt-elements-textPrimary" />
-        <a href="/" className="flex items-center gap-2 no-underline">
+      <div className="flex items-center gap-3 z-logo cursor-pointer group">
+        <div className="i-ph:sidebar-simple-duotone text-2xl text-bolt-elements-textPrimary transition-transform group-hover:scale-110" />
+        <a href="/" className="flex items-center gap-3 no-underline">
           <img
             src="/AsymiLink_Logo_Blue_--sref_httpss.mj.runIOBG4O6_f687d87f-4b35-4315-b3cd-2bb4911e97de_(1)-fotor-20251021193622.png"
             alt="AsymiLink AI"
-            className="h-[30px] w-auto inline-block"
-            style={{ filter: 'drop-shadow(0 0 8px rgba(0,245,255,0.3))' }}
+            className="h-[32px] w-auto inline-block transition-all duration-300 group-hover:scale-105"
+            style={{ filter: 'drop-shadow(0 0 12px rgba(167, 139, 250, 0.4))' }}
           />
           <span
             style={{
-              background: 'linear-gradient(90deg, #ffffff, #00f5ff 50%, #60a5fa)',
+              background: 'linear-gradient(135deg, #ffffff, #c4b5fd 40%, #a78bfa 70%, #8b5cf6)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              fontSize: '1.05rem',
+              fontSize: '1.125rem',
               fontWeight: 700,
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.03em',
             }}
           >
             AsymiLink AI
