@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { User, Folder, Wifi, Settings, Box, Sliders } from 'lucide-react';
+import { User, Folder, Wifi, Settings, Box, FileSliders as Sliders } from 'lucide-react';
 
 export type SettingCategory = 'profile' | 'file_sharing' | 'connectivity' | 'system' | 'services' | 'preferences';
 
@@ -9,6 +9,7 @@ export type TabType =
   | 'notifications'
   | 'features'
   | 'data'
+  | 'api-keys'
   | 'cloud-providers'
   | 'local-providers'
   | 'github'
@@ -72,6 +73,7 @@ export const TAB_LABELS: Record<TabType, string> = {
   notifications: 'Notifications',
   features: 'Features',
   data: 'Data Management',
+  'api-keys': 'API Keys',
   'cloud-providers': 'Cloud Providers',
   'local-providers': 'Local Providers',
   github: 'GitHub',

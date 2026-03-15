@@ -29,6 +29,7 @@ import NetlifyTab from '~/components/@settings/tabs/netlify/NetlifyTab';
 import CloudProvidersTab from '~/components/@settings/tabs/providers/cloud/CloudProvidersTab';
 import LocalProvidersTab from '~/components/@settings/tabs/providers/local/LocalProvidersTab';
 import McpTab from '~/components/@settings/tabs/mcp/McpTab';
+import ApiKeysTab from '~/components/@settings/tabs/api-keys/ApiKeysTab';
 import { createScopedLogger } from '~/utils/logger';
 
 const logger = createScopedLogger('ControlPanel');
@@ -126,6 +127,8 @@ export const ControlPanel = ({ open, onClose }: ControlPanelProps) => {
 
   const getTabComponent = (tabId: TabType) => {
     switch (tabId) {
+      case 'api-keys':
+        return <ApiKeysTab />;
       case 'profile':
         return <ProfileTab />;
       case 'settings':
